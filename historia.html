@@ -1,0 +1,1655 @@
+<!DOCTYPE html>
+<html lang="pt-BR" class="dark"> <!-- Define dark mode como padrão -->
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Biblioteca de Netzeroth</title>
+    <!-- Script do Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Variáveis de Tema */
+        :root {
+            --historia-bg-light: #f9fafb; --historia-text-light: #374151; --historia-heading-light: #111827;
+            --historia-link-light: #4f46e5; --historia-muted-light: #6b7280; --historia-border-light: #e5e7eb;
+            --historia-card-light: #ffffff; --historia-button-light: #e5e7eb; --historia-button-text-light: #374151;
+            --historia-sidebar-bg-light: #f3f4f6; --historia-sidebar-link-hover-light: #e5e7eb; --historia-accordion-bg-light: #f9fafb;
+
+            --historia-bg-dark: #111827; --historia-text-dark: #d1d5db; --historia-heading-dark: #f9fafb;
+            --historia-link-dark: #818cf8; --historia-muted-dark: #9ca3af; --historia-border-dark: #374151;
+            --historia-card-dark: #1f2937; --historia-button-dark: #374151; --historia-button-text-dark: #d1d5db;
+            --historia-sidebar-bg-dark: #1f2937; --historia-sidebar-link-hover-dark: #374151; --historia-accordion-bg-dark: #1f2937;
+        }
+
+        html { background-color: var(--historia-bg-light); color: var(--historia-text-light); scroll-behavior: smooth; }
+        html.dark { background-color: var(--historia-bg-dark); color: var(--historia-text-dark); }
+        body { font-family: Inter, system-ui, sans-serif; line-height: 1.7; transition: background-color 0.3s, color 0.3s; margin: 0; }
+
+        /* Layout Principal */
+        .app-layout { display: flex; min-height: 100vh; }
+        .sidebar {
+            width: 280px; background-color: var(--historia-sidebar-bg-light); border-right: 1px solid var(--historia-border-light);
+            padding: 1.5rem 1rem; position: fixed; top: 0; left: 0; bottom: 0; overflow-y: auto; z-index: 10;
+            display: flex; flex-direction: column; transition: background-color 0.3s, border-color 0.3s;
+        }
+        html.dark .sidebar { background-color: var(--historia-sidebar-bg-dark); border-right-color: var(--historia-border-dark); }
+        .main-content-area { margin-left: 280px; flex-grow: 1; padding: 2rem 2.5rem; transition: margin-left 0.3s; }
+
+        /* Estilos Sidebar */
+        .sidebar-title { font-size: 1.25rem; font-weight: 700; color: var(--historia-heading-light); margin-bottom: 1.5rem; padding-bottom: 0.5rem; border-bottom: 1px solid var(--historia-border-light); }
+        html.dark .sidebar-title { color: var(--historia-heading-dark); border-bottom-color: var(--historia-border-dark); }
+        .sidebar-nav { flex-grow: 1; overflow-y: auto; margin-bottom: 1rem; }
+        .sidebar-nav ul { list-style: none; padding: 0; margin: 0; }
+        /* Link Principal */
+        .sidebar-nav > ul > li > a {
+            display: flex; justify-content: space-between; align-items: center; cursor: pointer;
+            padding: 0.6rem 0.75rem; border-radius: 0.5rem; color: var(--historia-muted-light);
+            text-decoration: none; font-weight: 500; font-size: 0.95rem; transition: background-color 0.2s, color 0.2s;
+        }
+        /* Submenu */
+        .sidebar-nav ul ul.sub-menu { padding-left: 0.5rem; max-height: 0; overflow: hidden; transition: max-height 0.3s ease-out; }
+        .sidebar-nav li.open > ul.sub-menu { max-height: 500px; }
+        /* Link de Subseção */
+        .sidebar-nav ul ul li a {
+             padding: 0.4rem 0.75rem 0.4rem 1.75rem; font-size: 0.875rem; color: var(--historia-muted-light); display: block;
+             border-radius: 0.375rem; position: relative;
+        }
+        /* Indicador visual para subitem */
+        .sidebar-nav ul ul li a::before {
+             content: ''; position: absolute; left: 1rem; top: 50%; transform: translateY(-50%);
+             width: 4px; height: 4px; border-radius: 50%; background-color: var(--historia-border-light);
+        }
+        html.dark .sidebar-nav ul ul li a::before { background-color: var(--historia-border-dark); }
+
+        /* Hover e Active States */
+        .sidebar-nav li a:hover { background-color: var(--historia-sidebar-link-hover-light); color: var(--historia-text-light); }
+        html.dark .sidebar-nav li a:hover { background-color: var(--historia-sidebar-link-hover-dark); color: var(--historia-text-dark); }
+        .sidebar-nav li a.active { background-color: var(--historia-link-light); color: white !important; }
+        html.dark .sidebar-nav li a.active { background-color: var(--historia-link-dark); color: var(--historia-bg-dark) !important; }
+        /* Indicador Expansão */
+        .expand-indicator { transition: transform 0.2s; display: inline-block; font-size: 0.7em; margin-left: auto; padding-left: 0.5rem; }
+        .sidebar-nav li.open > a > .expand-indicator { transform: rotate(90deg); }
+
+        .sidebar-actions { border-top: 1px solid var(--historia-border-light); padding-top: 1rem; margin-top: auto; display: flex; flex-direction: column; gap: 0.75rem; }
+        html.dark .sidebar-actions { border-top-color: var(--historia-border-dark); }
+        .sidebar-btn {
+             background-color: var(--historia-button-light); color: var(--historia-button-text-light);
+             border: 1px solid var(--historia-border-light); padding: 0.6rem 1rem; border-radius: 0.5rem;
+             font-size: 0.875rem; font-weight: 500; cursor: pointer; transition: all 0.2s; text-align: center; width: 100%;
+             -webkit-appearance: none; appearance: none; /* Remove estilos padrão */
+        }
+        html.dark .sidebar-btn { background-color: var(--historia-button-dark); color: var(--historia-button-text-dark); border-color: var(--historia-border-dark); }
+        .sidebar-btn:hover { opacity: 0.8; }
+        .sidebar-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+        .sidebar-btn.primary { background-color: var(--historia-link-light); color: white; border-color: transparent; }
+        html.dark .sidebar-btn.primary { background-color: var(--historia-link-dark); color: var(--historia-bg-dark); }
+
+        /* Estilos 'prose' e Conteúdo */
+        .prose { max-width: 80ch; margin: 0 auto; }
+        .prose h1, .prose h2, .prose h3, .prose h4 { color: var(--historia-heading-light); font-weight: 700; margin-bottom: 0.8em; margin-top: 1.5em; border-bottom: 1px solid var(--historia-border-light); padding-bottom: 0.3em; }
+        html.dark .prose h1, html.dark .prose h2, html.dark .prose h3, html.dark .prose h4 { color: var(--historia-heading-dark); border-bottom-color: var(--historia-border-dark); }
+        .prose h1 { font-size: 2.25rem; margin-top: 0; }
+        .prose h2 { font-size: 1.875rem; }
+        .prose h3 { font-size: 1.5rem; border-bottom: none;}
+        .prose h4 { font-size: 1.25rem; border-bottom: none;}
+        .prose p { margin-bottom: 1.25em; color: var(--historia-text-light); }
+        html.dark .prose p { color: var(--historia-text-dark); }
+        .prose a:not(.no-prose) { color: var(--historia-link-light); text-decoration: underline; }
+        html.dark .prose a:not(.no-prose) { color: var(--historia-link-dark); }
+        .prose strong { font-weight: 600; color: inherit; }
+        .prose blockquote { border-left-width: 4px; border-color: var(--historia-border-light); padding-left: 1em; font-style: italic; color: var(--historia-muted-light); margin: 1.5em 0; }
+        html.dark .prose blockquote { border-color: var(--historia-border-dark); color: var(--historia-muted-dark); }
+        .placeholder-text { color: var(--historia-muted-light); font-style: italic; font-size: 0.875rem; margin-top: 0.5rem; }
+        html.dark .placeholder-text { color: var(--historia-muted-dark); }
+
+        /* Estilos Dinâmicos (Histórias) */
+        .dynamic-entry { background-color: var(--historia-card-light); border: 1px solid var(--historia-border-light); border-radius: 0.75rem; margin-bottom: 1.5rem; padding: 1.5rem; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
+        html.dark .dynamic-entry { background-color: var(--historia-card-dark); border-color: var(--historia-border-dark); }
+        .dynamic-entry h3, .dynamic-entry h4 { margin-top: 0; border-bottom: none; font-size: 1.25rem; }
+        .dynamic-entry .content { margin-top: 1rem; white-space: pre-wrap; line-height: 1.8; }
+        .dynamic-entry .actions { margin-top: 1rem; display: flex; gap: 0.5rem; justify-content: flex-end; }
+        .action-btn { font-size: 0.75rem; padding: 0.25rem 0.5rem; border-radius: 0.375rem; opacity: 0.7; cursor: pointer; } /* Garante cursor */
+        .action-btn:hover { opacity: 1; }
+
+        /* Accordion Conteúdo (Histórias e Criaturas) */
+        .content-accordion-item { border: 1px solid var(--historia-border-light); border-radius: 0.5rem; margin-bottom: 1rem; background-color: var(--historia-accordion-bg-light); overflow: hidden; }
+        html.dark .content-accordion-item { border-color: var(--historia-border-dark); background-color: var(--historia-accordion-bg-dark); }
+        .content-accordion-header { display: flex; justify-content: space-between; align-items: center; padding: 0.8rem 1.2rem; cursor: pointer; background-color: color-mix(in srgb, var(--historia-border-light) 5%, transparent); transition: background-color 0.2s; }
+        html.dark .content-accordion-header { background-color: color-mix(in srgb, var(--historia-border-dark) 20%, transparent); }
+        .content-accordion-header:hover { background-color: color-mix(in srgb, var(--historia-border-light) 10%, transparent); }
+        html.dark .content-accordion-header:hover { background-color: color-mix(in srgb, var(--historia-border-dark) 30%, transparent); }
+        .content-accordion-header h3, .content-accordion-header h4 { margin: 0; border: none; padding: 0; font-size: 1.25rem; }
+        .content-accordion-toggle::before { content: '▼'; display: inline-block; transition: transform 0.2s; margin-left: 0.5rem; font-size: 0.8em; }
+        .content-accordion-item.open .content-accordion-toggle::before { transform: rotate(180deg); }
+        .content-accordion-content { padding: 0 1.2rem 1.2rem; border-top: 1px solid var(--historia-border-light); display: none; }
+        html.dark .content-accordion-content { border-top-color: var(--historia-border-dark); }
+        .content-accordion-item.open .content-accordion-content { display: block; animation: fadeIn 0.3s ease-out; }
+        .content-accordion-content > *:first-child { margin-top: 1rem; }
+        .content-accordion-content h4 { margin-top: 1rem; font-size: 1.1rem; border-bottom: none; } /* Título das seções dentro */
+        /* Estilos específicos para Creature Accordion Content */
+        .creature-entry .content-accordion-content .content { margin-top: 0.5rem; margin-bottom: 1rem; }
+        .creature-entry .content-accordion-content pre { margin-top: 0.5rem; margin-bottom: 1rem; font-size: 0.9em; /* Ajusta tamanho da fonte pre */ }
+
+        /* Seção Home/Principal */
+        .section-home-description {
+            background-color: color-mix(in srgb, var(--historia-border-light) 3%, transparent);
+            border: 1px dashed var(--historia-border-light); padding: 1rem 1.5rem; border-radius: 0.5rem;
+            margin-bottom: 2rem; font-size: 0.95rem; color: var(--historia-muted-light); line-height: 1.6;
+        }
+        html.dark .section-home-description { background-color: color-mix(in srgb, var(--historia-border-dark) 10%, transparent); border-color: var(--historia-border-dark); color: var(--historia-muted-dark);}
+        .section-home-links { display: flex; flex-wrap: wrap; gap: 0.75rem; margin-top: 1rem; padding-bottom: 1.5rem; border-bottom: 1px solid var(--historia-border-light);}
+        html.dark .section-home-links { border-bottom-color: var(--historia-border-dark); }
+        .section-home-links a {
+            background-color: var(--historia-button-light); color: var(--historia-button-text-light); padding: 0.4rem 0.8rem;
+            border-radius: 99px; text-decoration: none; font-size: 0.8rem; font-weight: 500; transition: background-color 0.2s;
+            border: 1px solid var(--historia-border-light); cursor: pointer;
+        }
+        html.dark .section-home-links a { background-color: var(--historia-button-dark); color: var(--historia-button-text-dark); border-color: var(--historia-border-dark); }
+        .section-home-links a:hover { background-color: color-mix(in srgb, var(--historia-border-light) 15%, transparent); }
+        html.dark .section-home-links a:hover { background-color: color-mix(in srgb, var(--historia-border-dark) 40%, transparent); }
+
+
+        /* Home Content */
+        .home-content { text-align: center; padding: 4rem 1rem; }
+        .home-content h1 { font-size: 2.5rem; font-weight: 700; color: var(--historia-heading-light); margin-bottom: 1rem; border: none; padding: 0; }
+        html.dark .home-content h1 { color: var(--historia-heading-dark); }
+        .home-content p { font-size: 1.125rem; color: var(--historia-muted-light); max-width: 60ch; margin-left: auto; margin-right: auto; }
+        html.dark .home-content p { color: var(--historia-muted-dark); }
+
+        /* Modal */
+        .modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 50; background-color: rgba(0, 0, 0, 0.6); backdrop-filter: blur(5px); display: none; align-items: center; justify-content: center; padding: 1rem; animation: fadeIn 0.3s ease-out; }
+        .modal.active { display: flex; }
+        .modal-content { background-color: var(--historia-card-light); color: var(--historia-text-light); padding: 2rem; border-radius: 0.75rem; max-width: 700px; width: 100%; max-height: 90vh; overflow-y: auto; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); }
+        html.dark .modal-content { background-color: var(--historia-card-dark); color: var(--historia-text-dark); }
+        .modal-content h2 { margin-top: 0; border-bottom: none; font-size: 1.5rem; }
+        .modal-content label { display: block; margin-bottom: 0.5rem; font-weight: 500; font-size: 0.875rem; color: var(--historia-muted-light); }
+        html.dark .modal-content label { color: var(--historia-muted-dark); }
+        .modal-content select, .modal-content input[type="text"], .modal-content input[type="number"], .modal-content textarea { width: 100%; padding: 0.5rem 0.75rem; border-radius: 0.375rem; border: 1px solid var(--historia-border-light); background-color: var(--historia-bg-light); color: var(--historia-text-light); margin-bottom: 1rem; font-size: 1rem; }
+        html.dark .modal-content select, html.dark .modal-content input[type="text"], html.dark .modal-content input[type="number"], html.dark .modal-content textarea { border-color: var(--historia-border-dark); background-color: var(--historia-bg-dark); color: var(--historia-text-dark); }
+        .modal-content textarea { min-height: 150px; resize: vertical; }
+        #story-content { min-height: 200px; }
+        .modal-actions { display: flex; justify-content: flex-end; gap: 0.75rem; margin-top: 1.5rem; }
+        .modal-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1rem; } /* Grid para modal criatura */
+        /* Novo grid para atributos da criatura */
+        .creature-attributes-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr); /* 4 colunas */
+            gap: 0.75rem;
+            background-color: color-mix(in srgb, var(--historia-border-light) 3%, transparent);
+            border: 1px dashed var(--historia-border-light);
+            padding: 1rem;
+            border-radius: 0.5rem;
+            margin-bottom: 1rem;
+        }
+        html.dark .creature-attributes-grid {
+             background-color: color-mix(in srgb, var(--historia-border-dark) 10%, transparent);
+             border-color: var(--historia-border-dark);
+        }
+        .creature-attributes-grid > div {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .creature-attributes-grid label {
+            font-size: 0.75rem;
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+        .creature-attributes-grid input {
+            text-align: center;
+            font-weight: 700;
+            font-size: 1.25rem;
+            padding: 0.25rem 0.5rem;
+            margin-bottom: 0; /* Remove margin padrão */
+            max-width: 80px;
+        }
+
+
+        /* Gallery */
+        .gallery-container { display: grid; grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap: 0.75rem; margin-top: 1rem; }
+        .gallery-item { position: relative; border: 1px solid var(--historia-border-light); border-radius: 0.375rem; overflow: hidden; aspect-ratio: 3 / 4; background-color: var(--historia-border-light); } /* Fundo enquanto carrega */
+        html.dark .gallery-item { border-color: var(--historia-border-dark); background-color: var(--historia-border-dark); }
+        .gallery-item img { display: block; width: 100%; height: 100%; object-fit: cover; cursor: pointer; transition: transform 0.2s; }
+        .gallery-item:hover img { transform: scale(1.05); }
+        .gallery-item .delete-img-btn {
+            position: absolute; top: 4px; right: 4px; background-color: rgba(0,0,0,0.6); color: white;
+            border: none; border-radius: 50%; width: 20px; height: 20px; font-size: 12px;
+            cursor: pointer; display: flex; align-items: center; justify-content: center; line-height: 1; opacity: 0; transition: opacity 0.2s;
+        }
+        .gallery-item:hover .delete-img-btn { opacity: 1; }
+
+        /* Image Viewer Modal */
+        #image-viewer-modal .modal-content { max-width: 90vw; background-color: transparent; padding: 0; box-shadow: none; display: flex; align-items: center; justify-content: center; }
+        #image-viewer-img { max-width: 100%; max-height: 90vh; object-fit: contain; border-radius: 0.5rem; cursor: zoom-in; background-color: var(--historia-card-dark); box-shadow: 0 0 30px rgba(0,0,0,0.5); }
+        #image-viewer-img.zoomed { cursor: zoom-out; max-width: none; max-height: none; }
+        #close-viewer-btn { position: absolute; top: 1rem; right: 1rem; background-color: rgba(0,0,0,0.6); color: white; border: none; border-radius: 50%; width: 30px; height: 30px; font-size: 1.2rem; cursor: pointer; z-index: 60; }
+
+
+        .hidden { display: none; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        /* Responsividade */
+        @media (max-width: 768px) {
+             .sidebar { width: 100%; height: auto; position: relative; border-right: none; border-bottom: 1px solid var(--historia-border-light); flex-direction: column; z-index: 1; }
+             html.dark .sidebar { border-bottom-color: var(--historia-border-dark); }
+             .main-content-area { margin-left: 0; padding: 1.5rem 1rem; }
+             .sidebar-title { margin-bottom: 0.5rem; }
+             .sidebar-nav { flex-grow: 0; max-height: none; }
+             .sidebar-nav > ul > li { width: 100%; }
+             .sidebar-nav ul ul.sub-menu { padding-left: 0; }
+             .sidebar-actions { flex-direction: row; flex-wrap: wrap; margin-top: 1rem; border-top: none; padding-top: 0;}
+             .modal-content { max-width: 95%; padding: 1.5rem; }
+             .prose h1 { font-size: 1.8rem;}
+             .prose h2 { font-size: 1.5rem;}
+             .modal-grid { grid-template-columns: 1fr; } /* Modal criatura mobile */
+             .creature-attributes-grid { grid-template-columns: repeat(2, 1fr); } /* 2 colunas em mobile */
+        }
+    </style>
+</head>
+<body class="">
+
+    <div class="app-layout">
+        <!-- Barra Lateral -->
+        <aside class="sidebar">
+            <h2 class="sidebar-title">Biblioteca</h2>
+            <nav class="sidebar-nav">
+                <ul id="sidebar-menu">
+                    <!-- Links serão gerados pelo JS com base no código que você forneceu -->
+                </ul>
+            </nav>
+            <div class="sidebar-actions">
+                 <button id="add-story-btn" class="sidebar-btn primary" disabled>+ Nova História</button> <!-- Começa desabilitado -->
+                 <label class="sidebar-btn">
+                     Importar
+                     <input type="file" id="import-json" accept=".json" class="hidden">
+                 </label>
+                 <button id="export-json-btn" class="sidebar-btn">Exportar</button>
+                 <button id="theme-toggle-btn" class="sidebar-btn">
+                     <span class="theme-icon">☀️</span> <span class="theme-text">Modo Claro</span>
+                 </button>
+            </div>
+        </aside>
+
+        <!-- Área de Conteúdo Principal -->
+        <main class="main-content-area prose" id="main-content">
+            <!-- Conteúdo será carregado aqui -->
+            <div id="content-placeholder">
+                <!-- Conteúdo inicial ou da seção selecionada -->
+            </div>
+        </main>
+    </div>
+
+    <!-- Modal Adicionar/Editar História (igual ao código que você forneceu) -->
+    <div id="story-modal" class="modal">
+        <div class="modal-content">
+            <h2 id="story-modal-title">Adicionar Nova História</h2>
+            <input type="hidden" id="story-edit-id">
+            <div>
+                <label for="story-title">Título</label>
+                <input type="text" id="story-title" required>
+            </div>
+            <div>
+                <label for="story-section">Seção de Destino</label>
+                <select id="story-section" required></select>
+            </div>
+            <div id="new-section-fields" class="hidden mt-4 p-4 border border-[var(--historia-border-light)] dark:border-[var(--historia-border-dark)] rounded-md">
+                 <p class="text-sm font-medium mb-2">Nova Seção:</p>
+                <label for="new-section-title">Título da Nova Seção</label>
+                <input type="text" id="new-section-title" class="mb-2">
+                <label for="new-section-parent">Colocar Dentro de (Opcional - Cria Subseção)</label>
+                <select id="new-section-parent" class="mb-0"></select>
+            </div>
+            <div>
+                <label for="story-content">Conteúdo</label>
+                <textarea id="story-content" required></textarea>
+            </div>
+            <div class="modal-actions">
+                <button id="cancel-story-btn" type="button" class="sidebar-btn">Cancelar</button>
+                <button id="save-story-btn" type="button" class="sidebar-btn primary">Salvar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Adicionar/Editar Criatura (MODIFICADO) -->
+    <div id="creature-modal" class="modal">
+        <div class="modal-content">
+             <h2 id="creature-modal-title">Adicionar Nova Criatura</h2>
+             <input type="hidden" id="creature-edit-id">
+             <div><label for="creature-name">Nome</label><input type="text" id="creature-name" required></div>
+             <div class="modal-grid"> <!-- Grid para HP, EP, Ameaça -->
+                 <div><label for="creature-hp">Pontos de Vida - PV</label><input type="number" id="creature-hp" min="0"></div>
+                 <div><label for="creature-ep"> Pontos Espirituais - PE</label><input type="number" id="creature-ep" min="0"></div>
+                 <div>
+                     <label for="creature-threat">Grau de Ameaça</label>
+                     <select id="creature-threat">
+                         <option value="">Nenhum</option>
+                         <option value="Baixo">Amigável</option>
+                         <option value="Baixo">Baixo</option>
+                         <option value="Médio">Médio</option>
+                         <option value="Alto">Alto</option>
+                         <option value="Muito Alto">Muito Alto</option>
+                         <option value="Épico">Épico</option>
+                         <option value="Apocalíptico">Apocalíptico</option>
+                     </select>
+                </div>
+             </div>
+
+             <!-- Nova Seção de Atributos -->
+             <label>Atributos</label>
+             <div class="creature-attributes-grid">
+                 <div><label for="creature-for">FOR</label><input type="number" id="creature-for" min="1"></div>
+                 <div><label for="creature-agi">AGI</label><input type="number" id="creature-agi" min="1"></div>
+                 <div><label for="creature-vig">VIG</label><input type="number" id="creature-vig" min="1"></div>
+                 <div><label for="creature-ast">AST</label><input type="number" id="creature-ast" min="1"></div>
+                 <div><label for="creature-sab">SAB</label><input type="number" id="creature-sab" min="1"></div>
+                 <div><label for="creature-car">CAR</label><input type="number" id="creature-car" min="1"></div>
+                 <div><label for="creature-fe">FÉ</label><input type="number" id="creature-fe" min="1"></div>
+                 <!-- Deixa um espaço vazio para alinhar -->
+                 <div></div>
+             </div>
+
+             <div><label for="creature-description">Descrição</label><textarea id="creature-description"></textarea></div>
+             <div><label for="creature-origin">Origem</label><textarea id="creature-origin"></textarea></div>
+             <div><label for="creature-stories">Histórias</label><textarea id="creature-stories"></textarea></div>
+             <!-- O textarea de atributos antigo foi removido -->
+             <div><label for="creature-powers">Poderes / Habilidades Especiais</label><textarea id="creature-powers"></textarea></div>
+             <div class="modal-actions">
+                 <button id="cancel-creature-btn" type="button" class="sidebar-btn">Cancelar</button>
+                 <button id="save-creature-btn" type="button" class="sidebar-btn primary">Salvar</button>
+             </div>
+        </div>
+    </div>
+
+    <!-- Modal Visualizador de Imagem (Integrado) -->
+    <div id="image-viewer-modal" class="modal">
+         <button id="close-viewer-btn" title="Fechar">&times;</button>
+         <div class="modal-content">
+             <img id="image-viewer-img" src="about:blank" alt="Imagem Ampliada">
+         </div>
+    </div>
+
+    <!-- Input global para upload (Integrado) -->
+    <input type="file" id="image-upload-input" accept="image/*" class="hidden" multiple>
+
+
+    <script>
+        // --- Variáveis Globais ---
+        // (Igual ao código que você forneceu, incluindo refs para creatureModal etc.)
+        const themeToggleButton = document.getElementById('theme-toggle-btn');
+        const sidebarMenu = document.getElementById('sidebar-menu');
+        const contentPlaceholder = document.getElementById('content-placeholder');
+        // Modals
+        const storyModal = document.getElementById('story-modal');
+        const creatureModal = document.getElementById('creature-modal'); // Adicionado
+        const imageViewerModal = document.getElementById('image-viewer-modal'); // Adicionado
+        // Botões Ações Principais
+        const addStoryBtn = document.getElementById('add-story-btn');
+        const exportBtn = document.getElementById('export-json-btn');
+        const importInput = document.getElementById('import-json');
+        // Input Upload Imagem
+        const imageUploadInput = document.getElementById('image-upload-input'); // Adicionado
+        let currentCreatureIdForUpload = null; // Adicionado
+
+        // --- Theme ---
+        // (Igual ao código que você forneceu)
+        function applyTheme(theme) {
+             console.log("Applying theme:", theme);
+             const html = document.documentElement;
+             const icon = themeToggleButton.querySelector('.theme-icon');
+             const text = themeToggleButton.querySelector('.theme-text');
+             if (theme === 'dark') {
+                 html.classList.add('dark');
+                 if (icon) icon.textContent = '☀️';
+                 if (text) text.textContent = 'Modo Claro';
+             } else {
+                 html.classList.remove('dark');
+                 if (icon) icon.textContent = '🌙';
+                 if (text) text.textContent = 'Modo Escuro';
+             }
+        }
+        function toggleTheme() {
+            const currentTheme = document.documentElement.classList.contains('dark') ? 'dark' : 'light';
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            localStorage.setItem('historiaTheme', newTheme);
+            applyTheme(newTheme);
+        }
+        function loadTheme() {
+             console.log("Loading theme...");
+             let theme = localStorage.getItem('historiaTheme');
+             if (!theme) {
+                 try {
+                     if (window.self !== window.top && window.parent.document.documentElement.classList.contains('dark')) {
+                         theme = 'dark'; console.log("Syncing theme with parent (dark)");
+                     } else if (window.self !== window.top && !window.parent.document.documentElement.classList.contains('dark')) {
+                         theme = 'light'; console.log("Syncing theme with parent (light)");
+                     } else {
+                         theme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+                         console.log("Using system preference theme:", theme);
+                     }
+                 } catch (e) {
+                     theme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+                     console.warn("Could not access parent window for theme sync, using system preference:", theme);
+                 }
+             } else {
+                 console.log("Using saved theme:", theme);
+             }
+             applyTheme(theme || 'dark');
+        }
+        if(themeToggleButton) themeToggleButton.addEventListener('click', toggleTheme);
+
+        // --- Data Structure ---
+        // (Igual ao código que você forneceu, mas com 'creatures' adicionado)
+        const defaultHistoriaData = { stories: [], sections: [], creatures: [] };
+        let historiaData = JSON.parse(JSON.stringify(defaultHistoriaData));
+        const staticSectionsDefinition = [
+             // Ordem ajustada ligeiramente
+             { id: 'home', title: '🏠Home', level: 0, order: 0 },
+             { id: 'bem_vindo', title: '🌳Bem vindo à Netzeroth', level: 0, order: 1, isLore: true },
+             { id: 'origem', title: '⏳Histórias de Origem', level: 0, order: 2 },
+                 { id: 'origem_geral', title: 'Visão Geral', level: 1, parentId: 'origem', order: 2.1 },
+                 { id: 'origem_humanos', title: 'Humanos', level: 1, parentId: 'origem', order: 2.2 },
+                 { id: 'origem_alvorecidos', title: 'Alvorecidos', level: 1, parentId: 'origem', order: 2.3 },
+                 { id: 'origem_errantes', title: 'Errantes', level: 1, parentId: 'origem', order: 2.4 },
+                 { id: 'origem_auralinos', title: 'Auralinos', level: 1, parentId: 'origem', order: 2.5 },
+                 { id: 'origem_ferinos', title: 'Ferinos', level: 1, parentId: 'origem', order: 2.6 },
+                 { id: 'origem_vigias', title: 'Vigias', level: 1, parentId: 'origem', order: 2.7 },
+             { id: 'regioes', title: '🗺️Histórias das Regiões', level: 0, order: 3 },
+                 { id: 'regioes_geral', title: 'Visão Geral', level: 1, parentId: 'regioes', order: 3.1 },
+                 { id: 'regioes_ganeved', title: 'Gan Eved', level: 1, parentId: 'regioes', order: 3.2 },
+                 { id: 'regioes_ashkar', title: 'Ashkar', level: 1, parentId: 'regioes', order: 3.3 },
+                 { id: 'regioes_qadmiar', title: 'Qadmiar', level: 1, parentId: 'regioes', order: 3.4 },
+                 { id: 'regioes_yam', title: 'Yam Tallorah', level: 1, parentId: 'regioes', order: 3.5 },
+                 { id: 'regioes_neveloth', title: 'Neveloth', level: 1, parentId: 'regioes', order: 3.6 },
+                 { id: 'regioes_metsudoth', title: 'Metsudoth', level: 1, parentId: 'regioes', order: 3.7 },
+                 { id: 'regioes_haravoth', title: 'Haravoth', level: 1, parentId: 'regioes', order: 3.8 },
+                 { id: 'regioes_neharim', title: 'Neharim', level: 1, parentId: 'regioes', order: 3.9 },
+             { id: 'confins', title: '🌏Histórias dos Confins', level: 0, order: 4 },
+             { id: 'herois', title: '⚔️Histórias dos Heróis', level: 0, order: 5 },
+             { id: 'cultura', title: '📜Cultura e Lendas', level: 0, order: 6 },
+                 { id: 'cultura_lendas', title: 'Lendas', level: 1, parentId: 'cultura', order: 6.1 },
+                 { id: 'cultura_historias', title: 'Histórias', level: 1, parentId: 'cultura', order: 6.2 },
+                 { id: 'cultura_cantigas', title: 'Cantigas', level: 1, parentId: 'cultura', order: 6.3 },
+                 { id: 'cultura_proverbios', title: 'Provérbios e Ditos', level: 1, parentId: 'cultura', order: 6.4 }, // Ajuste nome
+                 { id: 'cultura_brincadeiras', title: 'Brincadeiras', level: 1, parentId: 'cultura', order: 6.5 },
+                 { id: 'cultura_anedotas', title: 'Anedotas', level: 1, parentId: 'cultura', order: 6.6 },
+             { id: 'censo', title: 'Censo de Netzeroth', level: 0, order: 7 },
+             { id: 'mitologia', title: 'Mitologia e Criaturas', level: 0, order: 8 },
+        ];
+        const sectionsMap = new Map();
+
+        // --- Textos Introdutórios ---
+        // (Adicionado)
+        const introTexts = {
+            home: {
+                 title: "Bem vindo à Biblioteca de Netzeroth!",
+                 text: "Aqui, as crônicas de eras passadas e os sussurros do presente se encontram. Explore os pergaminhos digitais que guardam a alma de Netzeroth, desde a criação até as lendas que ainda ecoam pelos vales e montanhas."
+            },
+            origem: "Das primeiras palavras de Elyon aos povos que hoje caminham sob a luz e a sombra, descubra as raízes das espécies que chamam Netzeroth de lar. Humanos, Alvorecidos, Errantes... cada um com sua centelha e sua luta.",
+            regioes: "De Haravoth verdejante às cinzas de Ashkar, cada região pulsa com vida, perigos e segredos próprios. Viaje por estas terras através das histórias aqui contidas e sinta o espírito de cada lugar.",
+            confins: "O que existe além das fronteiras conhecidas? Sussurros falam de terras envoltas em névoa eterna, mares onde canções ancestrais ecoam e céus guardados por sentinelas aladas. Aventure-se no desconhecido.",
+            herois: "Muitos trilharam o caminho do Portador do Selo, enfrentando a escuridão com coragem indômita e fé inabalável. Conheça as sagas daqueles cujos nomes se tornaram lendas sussurradas ao pé do fogo.",
+            cultura: "Um povo se define por suas canções sob o luar, seus ditos sábios passados por gerações, suas crenças profundas e até suas brincadeiras infantis. Mergulhe no coração cultural de Netzeroth.",
+            censo: "Nomes carregam poder, história e destino. Consulte aqui um registro dos nomes comuns e notáveis encontrados pelas diversas regiões e povos, um eco das almas que habitam estas terras.",
+            mitologia: "Criaturas ancestrais nascidas da própria criação, entidades poderosas que caminham entre o véu e a reality, e mitos fundadores sussurrados apenas pelos mais sábios. Desvende os mistérios das forças que moldaram e ainda influenciam o destino de Netzeroth.",
+            default: "Explore esta seção para descobrir mais sobre [SECTION_TITLE]." // Fallback
+        };
+
+
+        // --- Save/Load Data ---
+        // (Igual ao código que você forneceu, mas com 'creatures' adicionado)
+        function saveData() {
+             try {
+                 localStorage.setItem('netzerothHistoriaData_v2', JSON.stringify(historiaData));
+                 console.log("Data saved.");
+             } catch (e) {
+                 console.error("Error saving data:", e);
+                 if (e.name === 'QuotaExceededError') {
+                      alert("Erro ao salvar: Limite de armazenamento local excedido! Isso pode acontecer se você adicionar muitas imagens. Tente remover algumas imagens ou exportar seus dados.");
+                 } else {
+                      alert("Erro desconhecido ao salvar os dados.");
+                 }
+             }
+        }
+
+        function loadData() {
+            console.log("Loading data...");
+            const savedData = localStorage.getItem('netzerothHistoriaData_v2');
+            // Começa com a estrutura default ANTES de carregar
+            historiaData = JSON.parse(JSON.stringify(defaultHistoriaData));
+            sectionsMap.clear();
+
+            let loaded = {};
+            if (savedData) {
+                try {
+                    loaded = JSON.parse(savedData);
+                    console.log("Loaded data from localStorage:", loaded);
+                } catch (e) { console.error("Error parsing saved data:", e); }
+            } else {
+                 console.log("No saved data found in localStorage.");
+            }
+
+            // Garante que todas as seções estáticas existam
+            historiaData.sections = [...staticSectionsDefinition];
+
+            // Adiciona seções dinâmicas carregadas, garantindo que não sejam estáticas
+            (loaded.sections || []).forEach(loadedSection => {
+                if (!staticSectionsDefinition.find(s => s.id === loadedSection.id)) {
+                     // Adiciona apenas se não existir já (prevenindo duplicação se a definição estática mudar)
+                     if (!historiaData.sections.find(s => s.id === loadedSection.id)) {
+                         historiaData.sections.push({ ...loadedSection, isLore: false });
+                         console.log("Adding dynamic section:", loadedSection);
+                     }
+                }
+            });
+
+            // Ordena as seções para garantir a ordem correta
+            historiaData.sections.sort((a, b) => a.order - b.order);
+
+            // Popula map
+            historiaData.sections.forEach(s => sectionsMap.set(s.id, s));
+             console.log("Sections map populated:", sectionsMap);
+
+            // Carrega histórias e criaturas
+            historiaData.stories = loaded.stories || [];
+            // Assegura que criaturas tenham a estrutura esperada (incluindo gallery array e attributes object)
+            historiaData.creatures = (loaded.creatures || []).map(c => ({
+                 id: c.id || ('creature_' + Date.now().toString(36)), // Garante ID
+                 name: c.name || 'Criatura Sem Nome',
+                 hp: c.hp === undefined ? null : c.hp, // Mantém null se não definido
+                 ep: c.ep === undefined ? null : c.ep,
+                 threat: c.threat || null, // Mantém null se vazio
+                 // Garante que attributes seja um objeto
+                 attributes: (c.attributes && typeof c.attributes === 'object' && !Array.isArray(c.attributes)) ? c.attributes : {},
+                 description: c.description || '',
+                 origin: c.origin || '',
+                 storiesText: c.storiesText || '',
+                 attributesText: c.attributesText || '', // Mantém o campo antigo para compatibilidade, mas novo é 'attributes'
+                 powersText: c.powersText || '',
+                 gallery: Array.isArray(c.gallery) ? c.gallery : [] // Garante array
+            }));
+
+            console.log("Final historiaData after load:", historiaData);
+        }
+
+
+        // --- Rendering Sidebar with Accordion ---
+        // (Igual ao código que você forneceu)
+        function renderSidebar() {
+            console.log("Rendering sidebar...");
+            if (!sidebarMenu) { console.error("Sidebar menu element not found!"); return; }
+            sidebarMenu.innerHTML = ''; // Limpa
+
+            function createNavItem(section, isSubmenu = false) {
+                const li = document.createElement('li');
+                const link = document.createElement('a');
+                link.href = `#${section.id}`;
+                link.dataset.sectionId = section.id;
+
+                // Encontra filhos APENAS dentro das seções JÁ carregadas/definidas
+                const children = historiaData.sections.filter(s => s.parentId === section.id);
+
+                if (!isSubmenu && children.length > 0) {
+                    link.innerHTML = `${section.title} <span class="expand-indicator">▶</span>`;
+                    li.appendChild(link);
+
+                    const subMenu = document.createElement('ul');
+                    subMenu.classList.add('sub-menu');
+                    children.sort((a, b) => a.order - b.order).forEach(child => {
+                        subMenu.appendChild(createNavItem(child, true)); // Cria item de subseção
+                    });
+                    li.appendChild(subMenu);
+                } else {
+                    link.textContent = section.title; // Sem indicador se não tem filhos ou é subitem
+                    li.appendChild(link);
+                }
+                return li;
+            }
+
+            try {
+                // Filtra e ordena seções de nível 0 a partir de `historiaData.sections`
+                historiaData.sections
+                    .filter(s => s.level === 0)
+                    .sort((a, b) => a.order - b.order)
+                    .forEach(section => {
+                        sidebarMenu.appendChild(createNavItem(section));
+                    });
+
+                sidebarMenu.querySelectorAll('a').forEach(link => {
+                    link.addEventListener('click', handleNavClick);
+                });
+                console.log("Sidebar rendered successfully.");
+            } catch (error) {
+                 console.error("Error rendering sidebar:", error);
+                 sidebarMenu.innerHTML = '<li>Erro ao carregar menu.</li>';
+            }
+        }
+
+        // --- Navigation & Content Display ---
+        // (Igual ao código que você forneceu)
+        function handleNavClick(e) {
+             console.log("Nav click detected", e.target);
+             const link = e.currentTarget; // Use currentTarget para garantir que é o <a>
+             const listItem = link.closest('li'); // Encontra o <li> pai
+             const sectionId = link.dataset.sectionId;
+
+             // Se o clique foi no indicador, apenas expande/colapsa
+             if (e.target.classList.contains('expand-indicator')) {
+                 e.preventDefault();
+                 if (listItem) listItem.classList.toggle('open');
+                 console.log("Toggled sidebar item:", listItem);
+                 return;
+             }
+
+             // Se não foi no indicador, continua com a navegação
+             e.preventDefault();
+
+             // Abre submenu se clicar no link principal que tem submenu
+             if (listItem && !link.closest('.sub-menu') && listItem.querySelector('.sub-menu') && !listItem.classList.contains('open')) {
+                  listItem.classList.add('open');
+                  console.log("Opened parent sidebar item:", listItem);
+             }
+
+             navigateToSection(sectionId);
+
+             sidebarMenu.querySelectorAll('a').forEach(l => l.classList.remove('active'));
+             link.classList.add('active');
+
+             // Fecha outros submenus de nível 0 abertos
+              if (!link.closest('.sub-menu')) {
+                  sidebarMenu.querySelectorAll('li.open').forEach(openLi => {
+                      if (openLi !== listItem && !openLi.contains(listItem)) {
+                          openLi.classList.remove('open');
+                           console.log("Closed other sidebar item:", openLi);
+                      }
+                  });
+              }
+        }
+
+        function navigateToSection(sectionId) {
+             console.log("Navigating to section:", sectionId);
+             try {
+                history.pushState({ sectionId: sectionId }, "", `#${sectionId}`);
+                displayContent(sectionId || 'home');
+             } catch (error) {
+                 console.error("Error during navigation or displayContent:", error);
+                 if(contentPlaceholder) contentPlaceholder.innerHTML = '<p class="placeholder-text">Ocorreu um erro ao carregar esta seção.</p>';
+             }
+        }
+
+        // --- displayContent com Textos Introdutórios e Lógica de Botão ---
+        function displayContent(sectionId) {
+            console.log("Displaying content for section:", sectionId);
+            if (!contentPlaceholder) { console.error("Content placeholder element not found!"); return; }
+
+            const section = sectionsMap.get(sectionId);
+            contentPlaceholder.innerHTML = '';
+            // Ajusta estado do botão Add Story baseado na seção
+            // HABILITA em qualquer seção exceto bem_vindo e mitologia
+            addStoryBtn.disabled = (sectionId === 'bem_vindo' || sectionId === 'mitologia');
+
+
+            try {
+                if (sectionId === 'home') {
+                    const homeIntro = introTexts.home;
+                    contentPlaceholder.innerHTML = `
+                        <div class="home-content">
+                            <h1>${homeIntro.title}</h1>
+                            <p>${homeIntro.text}</p>
+                        </div>`;
+                    document.title = 'Biblioteca de Netzeroth';
+                } else if (sectionId === 'bem_vindo') {
+                    contentPlaceholder.innerHTML = `
+                        <h1>🌳Bem vindo à Netzeroth</h1>
+                        <p class="italic text-[var(--historia-muted-light)] dark:text-[var(--historia-muted-dark)] text-sm mb-4">(Esta seção contém a lore principal e não pode ser editada aqui.)</p>
+                        <h2>Prólogo</h2>
+                        <p>No princípio, quando as estrelas ainda cantavam e os rios conheciam seus nomes, Elyon, o Grande Rei, moldou a terra de Netzeroth com sua palavra. As montanhas ergueram-se como muralhas, as florestas floresceram com aromas jamais sentidos, e os mares dançavam ao som do vento. Ele habitava no Palácio de Luz, no alto do Monte do Alvorecer, e seu reino se estendia sem sombra ou temor. Sua corte era formada por nobres e mensageiros de poder imenso, cada um incumbido de preservar a ordem e a beleza do mundo.</p>
+                        <p>Mas nem todos guardaram lealdade. Um príncipe da corte, cujo nome foi apagado dos registros, invejou a glória de Elyon e buscou governar por si. Lá estava ele, entre os generais do exército do Grande Rei: um príncipe de brilho intenso e voz encantadora. Sua presença inspirava admiração, mas seu coração foi sendo tomado por um desejo oculto: não apenas servir, mas governar. Nos salões dourados e corredores da corte, ele sussurrava promessas e semeava questionamentos, atraindo para si uma hoste de seguidores.</p>
+                        <p>Quando a rebelião eclodiu, a terra tremeu. As hostes fiéis de Elyon enfrentaram as forças insurgentes numa guerra que ecoou por eras. O príncipe rebelde e os seus foram lançados para as regiões mais distantes e sombrias da criação — terras onde a luz de Elyon mal alcança. Porém, antes de ser deportado, semeou sussurros e sementes de orgulho na criação Desde então, o mundo se tornou campo de disputa, e cada coração é convidado a escolher...</p>
+                        <blockquote>...Elyon chama.</blockquote>
+                    `; // Conteúdo completo do Prólogo
+                    document.title = `Bem vindo à Netzeroth - Biblioteca`;
+                } else if (sectionId === 'mitologia') {
+                    renderMitologiaSection(contentPlaceholder); // Chama a função específica
+                    document.title = `Mitologia e Criaturas - Biblioteca Netzeroth`;
+                } else if (section) {
+                    renderMainSectionPage(section, contentPlaceholder);
+                    document.title = `${section.title} - Biblioteca Netzeroth`;
+                } else {
+                    contentPlaceholder.innerHTML = `<p class="placeholder-text">Seção "${sectionId}" não encontrada.</p>`;
+                    document.title = `Erro - Biblioteca Netzeroth`;
+                }
+            } catch (error) {
+                 console.error(`Error rendering content for section ${sectionId}:`, error);
+                 contentPlaceholder.innerHTML = '<p class="placeholder-text">Ocorreu um erro ao renderizar o conteúdo.</p>';
+            }
+             window.scrollTo(0, 0);
+        }
+
+        // --- Renderização das Páginas ---
+        // (renderMainSectionPage com textos introdutórios)
+        function renderMainSectionPage(section, parentElement) {
+             console.log("Rendering main section page:", section.id);
+             try {
+                const heading = document.createElement('h1');
+                heading.textContent = section.title;
+                parentElement.appendChild(heading);
+
+                const introText = introTexts[section.id] || introTexts.default.replace('[SECTION_TITLE]', section.title);
+                const description = document.createElement('p');
+                description.className = 'section-home-description';
+                description.innerHTML = introText.replace(/\n/g, '<br>'); // Adiciona quebras de linha se houver
+                parentElement.appendChild(description);
+
+                const children = historiaData.sections
+                    .filter(s => s.parentId === section.id)
+                    .sort((a, b) => a.order - b.order);
+
+                // Links rápidos apenas se houver subseções
+                if (children.length > 0) {
+                     const linksContainer = document.createElement('div');
+                     linksContainer.className = 'section-home-links';
+                     children.forEach(child => {
+                         const link = document.createElement('a');
+                         link.href = `#${child.id}`; // Alvo agora é a subseção
+                         link.dataset.scrollTo = child.id; // Scroll para o accordion
+                         link.className = "no-prose";
+                         link.textContent = child.title;
+                         // Adiciona listener aqui para scroll suave ao clicar no link rápido
+                         link.addEventListener('click', handleScrollLink);
+                         linksContainer.appendChild(link);
+                     });
+                     parentElement.appendChild(linksContainer);
+                }
+
+                const sectionStories = historiaData.stories.filter(s => s.sectionId === section.id);
+                if (sectionStories.length > 0) {
+                    sectionStories.forEach(story => renderStoryEntry(story, parentElement, section.isLore));
+                } else if (children.length === 0) { // Placeholder só se não houver filhos NEM histórias
+                    const placeholder = document.createElement('p');
+                    placeholder.className = 'placeholder-text';
+                    placeholder.textContent = section.isLore ? '(Conteúdo fixo a ser adicionado)' : '(Nenhuma história ou subseção adicionada aqui ainda.)';
+                    parentElement.appendChild(placeholder);
+                }
+
+                // Renderiza subseções em Accordions
+                children.forEach(child => {
+                    renderSubsectionAccordion(child, parentElement, 2); // H2 para header do accordion
+                });
+            } catch (error) {
+                 console.error(`Error in renderMainSectionPage for ${section.id}:`, error);
+                 parentElement.innerHTML = '<p class="placeholder-text">Erro ao renderizar seção.</p>'; // Fallback seguro
+            }
+        }
+
+        // (renderSubsectionAccordion e renderStoryEntry iguais ao código que você forneceu)
+        function renderSubsectionAccordion(section, parentElement, level) {
+             console.log("Rendering subsection accordion:", section.id, "Level:", level);
+             try {
+                const accordionItem = document.createElement('div');
+                accordionItem.className = 'content-accordion-item';
+                accordionItem.id = `content-${section.id}`; // ID para scroll
+                accordionItem.innerHTML = `
+                    <div class="content-accordion-header" data-accordion-toggle>
+                        <h${level} class="!m-0 !border-none !p-0 !text-base sm:!text-lg">${section.title}</h${level}>
+                        <span class="content-accordion-toggle"></span>
+                    </div>
+                    <div class="content-accordion-content"></div>
+                `;
+                const contentDiv = accordionItem.querySelector('.content-accordion-content');
+
+                const subsectionStories = historiaData.stories.filter(s => s.sectionId === section.id);
+                if (subsectionStories.length > 0) {
+                    subsectionStories.forEach(story => renderStoryEntry(story, contentDiv, section.isLore));
+                } else {
+                     const placeholder = document.createElement('p');
+                     placeholder.className = 'placeholder-text';
+                     placeholder.textContent = section.isLore ? '(Conteúdo fixo a ser adicionado)' : '(Nenhuma história adicionada aqui ainda.)';
+                     contentDiv.appendChild(placeholder);
+                }
+
+                // Renderiza sub-sub-seções diretamente (sem mais accordions internos por enquanto)
+                const grandchildren = historiaData.sections
+                    .filter(s => s.parentId === section.id)
+                    .sort((a, b) => a.order - b.order);
+
+                grandchildren.forEach(grandchild => {
+                    const subSubHeading = document.createElement(`h${level + 1}`); // h3, h4 etc
+                    subSubHeading.textContent = grandchild.title;
+                    contentDiv.appendChild(subSubHeading);
+                    const subSubStories = historiaData.stories.filter(s => s.sectionId === grandchild.id);
+                    if (subSubStories.length > 0) {
+                         subSubStories.forEach(story => renderStoryEntry(story, contentDiv, grandchild.isLore));
+                    } else {
+                         const placeholder = document.createElement('p');
+                         placeholder.className = 'placeholder-text';
+                         placeholder.textContent = grandchild.isLore ? '(Conteúdo fixo a ser adicionado)' : '(Nenhuma história adicionada aqui ainda.)';
+                         contentDiv.appendChild(placeholder);
+                    }
+                });
+
+
+                parentElement.appendChild(accordionItem);
+            } catch(error) {
+                console.error(`Error in renderSubsectionAccordion for ${section.id}:`, error);
+                // Evita que um erro em uma subseção quebre tudo
+            }
+        }
+
+        function renderStoryEntry(story, parentElement, isReadOnly = false) {
+             console.log("Rendering story entry:", story.id);
+             try {
+                const div = document.createElement('div');
+                div.className = 'dynamic-entry story-entry';
+                div.dataset.id = story.id;
+                div.innerHTML = `
+                    <h4>${story.title}</h4>
+                    <div class="content">${story.content.replace(/\n/g, '<br>')}</div>
+                    ${!isReadOnly ? `
+                    <div class="actions">
+                        <button class="sidebar-btn action-btn edit-story-btn">Editar</button>
+                        <button class="sidebar-btn action-btn !bg-red-600 !text-white !border-transparent delete-story-btn">Excluir</button>
+                    </div>` : ''}
+                `;
+                parentElement.appendChild(div);
+            } catch (error) {
+                 console.error(`Error rendering story ${story.id}:`, error);
+            }
+        }
+
+
+        // --- Renderização da Seção Mitologia (com ficha e galeria) ---
+        function renderMitologiaSection(parentElement) {
+             console.log("Rendering Mitologia section");
+             try {
+                parentElement.innerHTML = `
+                    <div class="flex justify-between items-center mb-6 flex-wrap gap-4"> <!-- Flex-wrap para mobile -->
+                        <h1>🐲 Mitologia e Criaturas Lendárias</h1>
+                        <button id="add-creature-btn" class="sidebar-btn primary !w-auto flex-shrink-0"> + Adicionar Criatura</button>
+                    </div>
+                    <p class="section-home-description">${introTexts.mitologia || introTexts.default.replace('[SECTION_TITLE]', 'Mitologia e Criaturas')}</p>
+                    <div id="creatures-list"></div>
+                `;
+
+                const creaturesList = document.getElementById('creatures-list');
+                if (!creaturesList) throw new Error("Creatures list element not found");
+
+                // Garante que historiaData.creatures é um array antes de usar sort/forEach
+                const creatures = Array.isArray(historiaData.creatures) ? historiaData.creatures : [];
+
+                if (creatures.length === 0) {
+                    creaturesList.innerHTML = `<p class="placeholder-text">(Nenhuma criatura adicionada ainda.)</p>`;
+                } else {
+                    creatures.sort((a, b) => (a.name || '').localeCompare(b.name || '')).forEach(creature => {
+                        renderCreatureAccordion(creature, creaturesList);
+                    });
+                }
+                const addBtn = document.getElementById('add-creature-btn');
+                // Garante que o botão existe antes de adicionar o listener
+                if (addBtn) {
+                     addBtn.addEventListener('click', () => openCreatureModal());
+                } else {
+                     console.error("Add creature button not found after rendering Mitologia section.");
+                }
+            } catch (error) {
+                 console.error("Error rendering Mitologia section:", error);
+                 parentElement.innerHTML = '<p class="placeholder-text">Erro ao renderizar seção de Mitologia.</p>';
+            }
+        }
+
+        function renderCreatureAccordion(creature, parentElement) {
+            console.log("Rendering creature accordion:", creature.id);
+             try {
+                const accordionItem = document.createElement('div');
+                accordionItem.className = 'content-accordion-item creature-entry';
+                accordionItem.dataset.id = creature.id;
+                accordionItem.id = `creature-${creature.id}`;
+
+                let statsHTML = '<h4>Ficha Rápida</h4>';
+                // Stats Principais
+                let mainStats = '';
+                if ((creature.hp !== null && creature.hp !== undefined) || (creature.ep !== null && creature.ep !== undefined) || creature.threat) {
+                    mainStats += '<div class="flex flex-wrap gap-x-4 gap-y-1 text-sm mb-2">';
+                    if (creature.hp !== null && creature.hp !== undefined) mainStats += `<span><strong>HP:</strong> ${creature.hp}</span>`;
+                    if (creature.ep !== null && creature.ep !== undefined) mainStats += `<span><strong>EP:</strong> ${creature.ep}</span>`;
+                    if (creature.threat) mainStats += `<span><strong>Ameaça:</strong> ${creature.threat}</span>`;
+                    mainStats += '</div>';
+                }
+
+                // Atributos (se existirem)
+                let attrStats = '';
+                if (creature.attributes && Object.keys(creature.attributes).length > 0) {
+                     attrStats += '<div class="flex flex-wrap gap-x-3 gap-y-1 text-xs mb-4 p-2 bg-[color-mix(in_srgb,var(--historia-border-light)_3%,transparent)] dark:bg-[color-mix(in_srgb,var(--historia-border-dark)_10%,transparent)] rounded">';
+                     const attrKeys = ['FOR', 'AGI', 'VIG', 'AST', 'SAB', 'CAR', 'FÉ']; // Ordem definida
+                     attrKeys.forEach(key => {
+                          if (creature.attributes[key] !== null && creature.attributes[key] !== undefined) {
+                             attrStats += `<span><strong>${key}:</strong> ${creature.attributes[key]}</span>`;
+                          }
+                     });
+                     attrStats += '</div>';
+                }
+
+                if (mainStats || attrStats) {
+                     statsHTML += mainStats + attrStats;
+                } else {
+                     statsHTML = ''; // Remove o título "Ficha Rápida" se não houver nada
+                }
+
+
+                accordionItem.innerHTML = `
+                    <div class="content-accordion-header" data-accordion-toggle>
+                        <h3 class="!m-0 !border-none !p-0 !text-lg sm:!text-xl">${creature.name || 'Criatura Sem Nome'}</h3>
+                        <span class="content-accordion-toggle"></span>
+                    </div>
+                    <div class="content-accordion-content">
+                        ${statsHTML}
+                        ${creature.description ? `<h4>Descrição</h4><p>${creature.description.replace(/\n/g, '<br>')}</p>` : ''}
+                        ${creature.origin ? `<h4>Origem</h4><p>${creature.origin.replace(/\n/g, '<br>')}</p>` : ''}
+                        ${creature.storiesText ? `<h4>Histórias</h4><div class="content">${creature.storiesText.replace(/\n/g, '<br>')}</div>` : ''}
+                        ${creature.powersText ? `<h4>Poderes / Habilidades</h4><div class="content">${creature.powersText.replace(/\n/g, '<br>')}</div>` : ''}
+                        
+                        <!-- Galeria -->
+                        <div class="mt-6">
+                            <div class="flex justify-between items-center mb-2">
+                                <h4 class="!mt-0 !mb-0">Galeria de Imagens</h4>
+                                <button class="sidebar-btn action-btn add-image-btn">Adicionar Imagem</button> <!-- Botão está aqui -->
+                            </div>
+                            <div class="gallery-container"></div>
+                        </div>
+                        
+                        <!-- Ações -->
+                        <div class="actions mt-6">
+                            <button class="sidebar-btn action-btn edit-creature-btn">Editar</button>
+                            <button class="sidebar-btn action-btn !bg-red-600 !text-white !border-transparent delete-creature-btn">Excluir</button>
+                        </div>
+                    </div>
+                `;
+                parentElement.appendChild(accordionItem);
+                // Chama renderGallery DEPOIS de adicionar ao DOM
+                const galleryContainer = accordionItem.querySelector('.gallery-container');
+                 if (galleryContainer) {
+                    renderGallery(creature, galleryContainer);
+                 } else {
+                     console.error("Gallery container not found within newly created creature accordion:", creature.id);
+                 }
+             } catch (error) {
+                  console.error(`Error rendering creature accordion ${creature.id}:`, error);
+             }
+        }
+
+
+        // --- Accordion Logic (Content) ---
+        function handleAccordionToggle(event) {
+             const header = event.target.closest('[data-accordion-toggle]');
+             if (header) {
+                 const item = header.closest('.content-accordion-item'); // Alterado para classe genérica
+                 if (item) {
+                     item.classList.toggle('open');
+                     console.log("Toggled content accordion:", item.id || 'N/A');
+                 }
+             }
+         }
+        // Adiciona listener APENAS se contentPlaceholder existir
+        if (contentPlaceholder) contentPlaceholder.addEventListener('click', handleAccordionToggle);
+        else console.error("contentPlaceholder not found, cannot add accordion listener.");
+
+
+        // --- Scroll to SubSection ---
+        function handleScrollLink(event) {
+            const link = event.target.closest('a[data-scroll-to]');
+            if (link) {
+                event.preventDefault();
+                const targetId = `content-${link.dataset.scrollTo}`;
+                const targetElement = document.getElementById(targetId);
+                if (targetElement) {
+                     const accordionItem = targetElement.closest('.content-accordion-item');
+                     if (accordionItem && !accordionItem.classList.contains('open')) {
+                         accordionItem.classList.add('open'); // Abre antes de rolar
+                     }
+                     // Pequeno delay para garantir que o accordion abriu antes de rolar
+                     setTimeout(() => {
+                         targetElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                     }, 100);
+                } else {
+                    console.warn("Scroll target not found:", targetId);
+                }
+            }
+        }
+        if (contentPlaceholder) contentPlaceholder.addEventListener('click', handleScrollLink);
+        else console.error("contentPlaceholder not found, cannot add scroll link listener.");
+
+
+        // --- Modals ---
+        function openModal(modal) { if(modal) modal.classList.add('active'); else console.error("Attempted to open a null modal"); }
+        function closeModal(modal) { if(modal) modal.classList.remove('active'); else console.error("Attempted to close a null modal"); }
+
+        // --- Story Modal & Actions ---
+        function populateSectionSelect(selectElement, includeCreateOptions = false, currentStorySectionId = null) {
+             if (!selectElement) return;
+             selectElement.innerHTML = ''; // Limpa
+
+             if (includeCreateOptions) {
+                 selectElement.innerHTML += `
+                     <option value="_new_top_level">[Criar Nova Seção Principal]</option>
+                     <option value="_new_sub_section">[Criar Subseção Dentro de...]</option>
+                     <option value="" disabled>--------------------</option>
+                 `;
+             } else {
+                 selectElement.innerHTML += `<option value="">[Selecione uma Seção]</option>`
+             }
+
+             function addOptions(parentId, indentLevel) {
+                 // Exclui 'home', 'bem_vindo' e 'mitologia' das opções de destino de histórias
+                const children = historiaData.sections
+                    .filter(s => (s.parentId || null) === parentId && s.id !== 'home' && s.id !== 'bem_vindo' && s.id !== 'mitologia')
+                    .sort((a, b) => a.order - b.order);
+
+                children.forEach(section => {
+                    const option = document.createElement('option');
+                    option.value = section.id;
+                    option.textContent = `${'--'.repeat(indentLevel)} ${section.title}`;
+                    option.selected = section.id === currentStorySectionId;
+                    selectElement.appendChild(option);
+                    addOptions(section.id, indentLevel + 1); // Recursão
+                });
+             }
+             addOptions(null, 0); // Começa do nível raiz
+        }
+
+        function openStoryModal(story = null) {
+            console.log("Opening story modal for:", story ? story.id : 'new story');
+            if (!storyModal) return console.error("Story modal not found");
+
+            const titleEl = document.getElementById('story-modal-title');
+            const editIdInput = document.getElementById('story-edit-id');
+            const storyTitleInput = document.getElementById('story-title');
+            const storyContentInput = document.getElementById('story-content');
+            const storySectionSelect = document.getElementById('story-section');
+            const newSectionFields = document.getElementById('new-section-fields');
+            const newSectionTitleInput = document.getElementById('new-section-title');
+            const newSectionParentSelect = document.getElementById('new-section-parent');
+
+            // Verifica se todos os elementos existem
+            if (!titleEl || !editIdInput || !storyTitleInput || !storyContentInput || !storySectionSelect || !newSectionFields || !newSectionTitleInput || !newSectionParentSelect) {
+                 return console.error("One or more elements inside story modal are missing!");
+            }
+
+            // Popula selects
+            populateSectionSelect(storySectionSelect, true, story ? story.sectionId : null);
+            // Popula pais (exclui home, bem_vindo, mitologia e subseções para evitar aninhamento excessivo no modal simples)
+             populateSectionSelect(newSectionParentSelect, false, null);
+
+
+            newSectionFields.classList.add('hidden');
+            newSectionTitleInput.value = '';
+            newSectionParentSelect.value = '';
+
+            if (story) {
+                titleEl.textContent = 'Editar História';
+                editIdInput.value = story.id;
+                storyTitleInput.value = story.title;
+                storyContentInput.value = story.content;
+                storySectionSelect.value = story.sectionId; // Garante que a seção correta esteja selecionada
+            } else {
+                titleEl.textContent = 'Adicionar Nova História';
+                editIdInput.value = '';
+                storyTitleInput.value = '';
+                storyContentInput.value = '';
+                // Tenta pré-selecionar a seção atual, se válida
+                const currentSectionId = window.location.hash ? window.location.hash.substring(1) : 'home';
+                 const currentSection = sectionsMap.get(currentSectionId);
+                 if (currentSection && !currentSection.isLore && currentSectionId !== 'home' && currentSectionId !== 'mitologia') {
+                     storySectionSelect.value = currentSectionId;
+                 } else {
+                     storySectionSelect.value = ''; // Default sem seleção
+                 }
+            }
+
+             storySectionSelect.onchange = () => {
+                 const selectedValue = storySectionSelect.value;
+                 if (selectedValue === '_new_top_level' || selectedValue === '_new_sub_section') {
+                     newSectionFields.classList.remove('hidden');
+                     newSectionParentSelect.disabled = (selectedValue === '_new_top_level');
+                     if (selectedValue === '_new_top_level') newSectionParentSelect.value = '';
+                 } else {
+                     newSectionFields.classList.add('hidden');
+                 }
+             };
+             storySectionSelect.dispatchEvent(new Event('change'));
+
+            openModal(storyModal);
+        }
+
+        function saveStory() { /* ... (igual ao código que você forneceu) ... */ }
+        function deleteStory(id) { /* ... (igual ao código que você forneceu) ... */ }
+
+        // --- Creature Modal & Actions (Integrado) ---
+        function openCreatureModal(creature = null) {
+             console.log("Opening creature modal for:", creature ? creature.id : 'new creature');
+             if (!creatureModal) return console.error("Creature modal not found");
+             const titleEl = document.getElementById('creature-modal-title');
+             const editIdInput = document.getElementById('creature-edit-id');
+             // Reset fields
+             editIdInput.value = '';
+             document.getElementById('creature-name').value = '';
+             document.getElementById('creature-hp').value = '';
+             document.getElementById('creature-ep').value = '';
+             document.getElementById('creature-threat').value = '';
+             document.getElementById('creature-description').value = '';
+             document.getElementById('creature-origin').value = '';
+             document.getElementById('creature-stories').value = '';
+             // Reset atributos
+             const attrKeys = ['for', 'agi', 'vig', 'ast', 'sab', 'car', 'fe'];
+             attrKeys.forEach(key => { document.getElementById(`creature-${key}`).value = ''; });
+             document.getElementById('creature-powers').value = '';
+
+            if (creature) { // Editando
+                titleEl.textContent = 'Editar Criatura';
+                editIdInput.value = creature.id;
+                document.getElementById('creature-name').value = creature.name || '';
+                document.getElementById('creature-hp').value = creature.hp || '';
+                document.getElementById('creature-ep').value = creature.ep || '';
+                document.getElementById('creature-threat').value = creature.threat || '';
+                document.getElementById('creature-description').value = creature.description || '';
+                document.getElementById('creature-origin').value = creature.origin || '';
+                document.getElementById('creature-stories').value = creature.storiesText || '';
+                // Popula atributos
+                if (creature.attributes) {
+                     attrKeys.forEach(key => {
+                         document.getElementById(`creature-${key}`).value = creature.attributes[key.toUpperCase()] || '';
+                     });
+                }
+                document.getElementById('creature-powers').value = creature.powersText || '';
+            } else { // Adicionando
+                titleEl.textContent = 'Adicionar Nova Criatura';
+            }
+            openModal(creatureModal);
+        }
+
+        function saveCreature() {
+            const id = document.getElementById('creature-edit-id').value;
+            const name = document.getElementById('creature-name').value.trim();
+            if (!name) return alert('O nome da criatura é obrigatório.');
+
+            const attributes = {};
+            const attrKeys = ['FOR', 'AGI', 'VIG', 'AST', 'SAB', 'CAR', 'FÉ'];
+            attrKeys.forEach(key => {
+                const val = parseInt(document.getElementById(`creature-${key.toLowerCase()}`).value);
+                if (!isNaN(val) && val > 0) {
+                    attributes[key] = val;
+                }
+            });
+
+            const creatureData = {
+                id: id || ('creature_' + Date.now().toString(36) + Math.random().toString(36).substring(2, 5)),
+                name: name,
+                 hp: parseInt(document.getElementById('creature-hp').value) || null,
+                 ep: parseInt(document.getElementById('creature-ep').value) || null,
+                 threat: document.getElementById('creature-threat').value || null, // Salva string vazia como null
+                 attributes: attributes, // Salva o objeto de atributos
+                 description: document.getElementById('creature-description').value.trim(),
+                 origin: document.getElementById('creature-origin').value.trim(),
+                 storiesText: document.getElementById('creature-stories').value.trim(),
+                 powersText: document.getElementById('creature-powers').value.trim(),
+                 gallery: [] // Galeria mantida ou inicializada
+            };
+
+            // Garante que hp e ep sejam null se não forem números válidos > 0
+            if (isNaN(creatureData.hp) || creatureData.hp <= 0) creatureData.hp = null;
+            if (isNaN(creatureData.ep) || creatureData.ep <= 0) creatureData.ep = null;
+            if (!creatureData.threat) creatureData.threat = null; // Garante null se string vazia
+
+
+            if (id) { // Editando
+                const index = historiaData.creatures.findIndex(c => c.id === id);
+                if (index > -1) {
+                    creatureData.gallery = historiaData.creatures[index].gallery || []; // Preserva galeria
+                    historiaData.creatures[index] = creatureData;
+                    console.log("Criatura editada:", creatureData);
+                } else {
+                     console.error("Creature not found for editing:", id);
+                     return; // Evita adicionar como nova se o ID era para edição mas não foi encontrado
+                }
+            } else { // Adicionando
+                 // Garante que creatures é um array antes de adicionar
+                 if (!Array.isArray(historiaData.creatures)) historiaData.creatures = [];
+                 historiaData.creatures.push(creatureData);
+                 console.log("Criatura adicionada:", creatureData);
+            }
+
+            saveData();
+            // Re-renderiza APENAS a seção de mitologia se estiver nela
+            if (window.location.hash === '#mitologia') {
+                displayContent('mitologia');
+            }
+            closeModal(creatureModal);
+        }
+
+
+        function deleteCreature(id) {
+            if (confirm("Tem certeza que deseja excluir esta criatura e sua galeria?")) {
+                 // Garante que é um array
+                 if (!Array.isArray(historiaData.creatures)) historiaData.creatures = [];
+                 historiaData.creatures = historiaData.creatures.filter(c => c.id !== id);
+                 saveData();
+                 // Re-renderiza a seção de mitologia se estiver nela
+                 if (window.location.hash === '#mitologia') {
+                     displayContent('mitologia');
+                 }
+                 console.log("Criatura excluída:", id);
+            }
+        }
+
+        // --- Gallery Functions (Integrado) ---
+         function renderGallery(creature, galleryContainer) {
+              if (!galleryContainer) return console.warn("Gallery container not found for creature", creature.id);
+              galleryContainer.innerHTML = ''; // Limpa
+              // Garante que creature.gallery é um array
+              const gallery = Array.isArray(creature.gallery) ? creature.gallery : [];
+
+              if (gallery.length === 0) {
+                   galleryContainer.innerHTML = `<p class="placeholder-text text-xs">(Nenhuma imagem)</p>`;
+                   return;
+              }
+              gallery.forEach((imgDataUrl, index) => {
+                   try {
+                       const item = document.createElement('div');
+                       item.className = 'gallery-item';
+                       item.innerHTML = `
+                          <img src="${imgDataUrl}" alt="${creature.name || 'Imagem'} - ${index + 1}" loading="lazy">
+                          <button class="delete-img-btn" data-index="${index}" title="Remover Imagem">&times;</button>
+                       `;
+                       item.querySelector('img').addEventListener('click', () => openImageViewer(imgDataUrl));
+                       item.querySelector('.delete-img-btn').addEventListener('click', (e) => {
+                           e.stopPropagation();
+                           deleteImage(creature.id, index);
+                       });
+                       galleryContainer.appendChild(item);
+                   } catch (error) {
+                        console.error("Error rendering gallery item:", error);
+                        const errorItem = document.createElement('div');
+                        errorItem.className = 'gallery-item';
+                        errorItem.innerHTML = `<div class="flex items-center justify-center h-full text-xs text-red-500">Erro</div>`;
+                        galleryContainer.appendChild(errorItem);
+                   }
+              });
+         }
+
+         function triggerImageUpload(creatureId) {
+             console.log("Triggering image upload for creature:", creatureId);
+             currentCreatureIdForUpload = creatureId;
+             imageUploadInput.value = null; // Limpa seleção anterior
+             imageUploadInput.click();
+         }
+
+         function handleImageUpload(event) {
+             console.log("Handling image upload...");
+             if (!currentCreatureIdForUpload) {
+                 console.warn("No creature ID set for upload.");
+                 return;
+             }
+             // Verifica se creatures existe e é um array
+             if (!Array.isArray(historiaData.creatures)) {
+                  console.error("historiaData.creatures is not an array!");
+                  currentCreatureIdForUpload = null;
+                  event.target.value = null;
+                  return;
+             }
+
+             const creatureIndex = historiaData.creatures.findIndex(c => c.id === currentCreatureIdForUpload);
+             if (creatureIndex === -1) {
+                 console.warn("Creature not found for upload:", currentCreatureIdForUpload);
+                 // Reset mesmo se a criatura sumiu
+                 currentCreatureIdForUpload = null;
+                 event.target.value = null;
+                 return;
+             }
+
+             const files = event.target.files;
+             if (!files || files.length === 0) {
+                  console.log("No files selected.");
+                  currentCreatureIdForUpload = null; // Reset
+                  return;
+             }
+
+             const MAX_SIZE = 2 * 1024 * 1024; // 2MB
+             let filesProcessed = 0;
+             let errorsOccurred = false; // Flag para erros
+
+             const checkCompletion = () => {
+                 filesProcessed++;
+                 if (filesProcessed === files.length) {
+                     console.log("Finished processing all selected files.");
+                     // Salva UMA VEZ no final, se não houve erros QUOTA
+                     if (!errorsOccurred) {
+                        saveData();
+                        // Re-renderiza a galeria APÓS todas as imagens serem processadas
+                        const creatureElement = document.getElementById(`creature-${currentCreatureIdForUpload}`);
+                        if (creatureElement) {
+                            const galleryContainer = creatureElement.querySelector('.gallery-container');
+                            // Adiciona verificação se galleryContainer existe
+                            if(galleryContainer) {
+                                // Garante que historiaData.creatures[creatureIndex] existe antes de passar
+                                if(historiaData.creatures[creatureIndex]) {
+                                    renderGallery(historiaData.creatures[creatureIndex], galleryContainer);
+                                } else {
+                                     console.error("Creature data missing after upload for re-render.");
+                                }
+                            } else {
+                                console.error("Gallery container not found for re-render after upload.");
+                            }
+                        } else {
+                            console.warn("Creature element not found for re-render after upload.");
+                        }
+                     }
+                     currentCreatureIdForUpload = null; // Reseta no final
+                     event.target.value = null; // Limpa input no final
+                 }
+             };
+
+             Array.from(files).forEach(file => {
+                 if (file.size > MAX_SIZE) {
+                     alert(`A imagem "${file.name}" é muito grande (max ${MAX_SIZE / 1024 / 1024}MB).`);
+                     checkCompletion(); // Conta como processado (falhou)
+                     return;
+                 }
+                 const reader = new FileReader();
+                 reader.onload = (e) => {
+                     try {
+                         const imgDataUrl = e.target.result;
+                         // Garante que gallery exista como array ANTES de adicionar
+                         if (!Array.isArray(historiaData.creatures[creatureIndex].gallery)) {
+                             historiaData.creatures[creatureIndex].gallery = [];
+                         }
+                         historiaData.creatures[creatureIndex].gallery.push(imgDataUrl);
+                         console.log("Image added (in memory) for creature:", currentCreatureIdForUpload);
+                     } catch (error) {
+                          console.error("Error adding image data URL:", error);
+                          errorsOccurred = true; // Marca erro
+                          alert(`Erro ao processar a imagem "${file.name}".`);
+                     } finally {
+                          checkCompletion(); // Conta como processado
+                     }
+                 };
+                 reader.onerror = (e) => {
+                     console.error("Erro ao ler arquivo:", file.name, e);
+                     alert(`Erro ao ler o arquivo "${file.name}".`);
+                     errorsOccurred = true;
+                     checkCompletion(); // Conta como processado (falhou)
+                 };
+                 reader.readAsDataURL(file);
+             });
+        }
+        imageUploadInput.addEventListener('change', handleImageUpload);
+
+
+        function deleteImage(creatureId, imageIndex) {
+            console.log(`Attempting to delete image ${imageIndex} from creature ${creatureId}`);
+             const creatureIndex = historiaData.creatures.findIndex(c => c.id === creatureId);
+             if (creatureIndex > -1 && historiaData.creatures[creatureIndex].gallery && historiaData.creatures[creatureIndex].gallery[imageIndex]) {
+                 historiaData.creatures[creatureIndex].gallery.splice(imageIndex, 1);
+                 saveData();
+                 // Re-renderiza a galeria
+                 const creatureElement = document.getElementById(`creature-${creatureId}`);
+                 if (creatureElement) {
+                     const galleryContainer = creatureElement.querySelector('.gallery-container');
+                     if (galleryContainer) {
+                          renderGallery(historiaData.creatures[creatureIndex], galleryContainer);
+                     } else {
+                          console.warn("Gallery container not found after deleting image for re-render.");
+                     }
+                 } else {
+                      console.warn("Creature element not found after deleting image for re-render.");
+                 }
+                 console.log(`Image ${imageIndex} removed from creature ${creatureId}`);
+             } else {
+                 console.warn(`Image index ${imageIndex} or creature ${creatureId} not found for deletion.`);
+             }
+        }
+
+
+        // --- Image Viewer Modal (Integrado) ---
+         const closeViewerBtn = document.getElementById('close-viewer-btn');
+         const viewerImg = document.getElementById('image-viewer-img');
+         function openImageViewer(imgDataUrl) {
+              if (!imageViewerModal || !viewerImg) return console.error("Image viewer modal elements not found");
+              viewerImg.src = imgDataUrl;
+              viewerImg.classList.remove('zoomed');
+              openModal(imageViewerModal);
+         }
+         if(closeViewerBtn) closeViewerBtn.addEventListener('click', () => closeModal(imageViewerModal));
+         if(imageViewerModal) imageViewerModal.addEventListener('click', (e) => { if (e.target === imageViewerModal) closeModal(imageViewerModal); });
+         if(viewerImg) viewerImg.addEventListener('click', (e) => { e.stopPropagation(); viewerImg.classList.toggle('zoomed'); });
+
+        // --- Import/Export (Integrado) ---
+        function exportData() {
+            const dataToExport = {
+                stories: historiaData.stories,
+                sections: historiaData.sections.filter(s => !staticSectionsDefinition.find(staticSec => staticSec.id === s.id)),
+                creatures: historiaData.creatures // Inclui criaturas
+            };
+            const dataStr = JSON.stringify(dataToExport, null, 2);
+            const blob = new Blob([dataStr], { type: "application/json" });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `biblioteca_netzeroth_${new Date().toISOString().split('T')[0]}.json`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            alert("Dados exportados! Guarde o arquivo JSON com segurança.");
+        }
+
+        function importData(event) {
+             const file = event.target.files[0];
+             if (!file) return;
+             const reader = new FileReader();
+             reader.onload = (e) => {
+                 try {
+                     const imported = JSON.parse(e.target.result);
+                      // Verifica se tem pelo menos uma das estruturas esperadas
+                     if (imported && (Array.isArray(imported.stories) || Array.isArray(imported.sections) || Array.isArray(imported.creatures))) {
+                         if (confirm("Isso adicionará histórias, seções e criaturas do arquivo aos dados existentes (não substituirá). Deseja continuar?")) {
+                             loadData(); // Recarrega dados atuais
+
+                             const loadedStories = imported.stories || [];
+                             const loadedSections = imported.sections || [];
+                             const loadedCreatures = imported.creatures || []; // Carrega criaturas
+                             let sectionsAdded = 0;
+                             let storiesAdded = 0;
+                             let creaturesAdded = 0; // Contador para criaturas
+
+                             // Adiciona seções dinâmicas importadas (valida e evita duplicatas)
+                             loadedSections.forEach(section => {
+                                 if (!staticSectionsDefinition.find(s => s.id === section.id) && !sectionsMap.has(section.id)) {
+                                      const newSection = {
+                                         id: section.id || ('section_' + Date.now().toString(36)),
+                                         title: section.title || 'Seção Importada',
+                                         parentId: section.parentId === undefined ? null : section.parentId, // Garante null se não definido
+                                         level: section.level || 0,
+                                         order: section.order || 99,
+                                         isLore: false
+                                     };
+                                     historiaData.sections.push(newSection);
+                                     sectionsMap.set(newSection.id, newSection); // Adiciona ao map também
+                                     sectionsAdded++;
+                                 } else {
+                                      console.warn(`Seção importada com ID ${section.id} já existe ou é estática, pulando.`);
+                                 }
+                             });
+                              // Reordena após adicionar todas as seções
+                              historiaData.sections.sort((a, b) => a.order - b.order);
+
+                             // Adiciona histórias importadas (evita duplicatas)
+                             loadedStories.forEach(story => {
+                                 if (!historiaData.stories.find(s => s.id === story.id)) {
+                                     // Verifica se a seção de destino existe (estática ou dinâmica)
+                                     if (sectionsMap.has(story.sectionId)) {
+                                         historiaData.stories.push(story);
+                                         storiesAdded++;
+                                     } else {
+                                          console.warn(`Seção ${story.sectionId} para a história ${story.id} não encontrada, pulando importação da história.`);
+                                     }
+                                 } else {
+                                     console.warn(`História com ID ${story.id} já existe, pulando importação.`);
+                                 }
+                             });
+
+                             // Adiciona criaturas importadas (evita duplicatas)
+                             loadedCreatures.forEach(creature => {
+                                 if (!historiaData.creatures.find(c => c.id === creature.id)) {
+                                     // Validação mínima da estrutura da criatura
+                                     const newCreature = {
+                                         id: creature.id || ('creature_' + Date.now().toString(36)),
+                                         name: creature.name || 'Criatura Importada',
+                                         hp: creature.hp === undefined ? null : creature.hp,
+                                         ep: creature.ep === undefined ? null : creature.ep,
+                                         threat: creature.threat || null,
+                                         attributes: (creature.attributes && typeof creature.attributes === 'object') ? creature.attributes : {}, // Garante objeto
+                                         description: creature.description || '',
+                                         origin: creature.origin || '',
+                                         storiesText: creature.storiesText || '',
+                                         attributesText: creature.attributesText || '', // Mantém compatibilidade
+                                         powersText: creature.powersText || '',
+                                         gallery: Array.isArray(creature.gallery) ? creature.gallery : [] // Garante que galeria seja array
+                                     };
+                                     historiaData.creatures.push(newCreature);
+                                     creaturesAdded++;
+                                 } else {
+                                     console.warn(`Criatura com ID ${creature.id} já existe, pulando importação.`);
+                                 }
+                             });
+
+
+                             if (sectionsAdded > 0 || storiesAdded > 0 || creaturesAdded > 0) { // Verifica criaturas também
+                                 saveData();
+                                 renderSidebar(); // Atualiza sidebar com novas seções, se houver
+                                 const currentSectionId = window.location.hash ? window.location.hash.substring(1) : 'home';
+                                 displayContent(currentSectionId); // Re-renderiza conteúdo atual
+                                 alert(`${storiesAdded} histórias, ${sectionsAdded} seções e ${creaturesAdded} criaturas importadas com sucesso!`);
+                             } else {
+                                 alert("Nenhuma nova história, seção ou criatura encontrada para importar.");
+                             }
+                         }
+                     } else {
+                         alert("Arquivo JSON inválido ou não contém 'stories', 'sections' ou 'creatures'.");
+                     }
+                 } catch (err) {
+                     console.error("Erro ao importar:", err);
+                     alert("Erro ao ler o arquivo JSON.");
+                 } finally {
+                     event.target.value = null; // Limpa input
+                 }
+             };
+             reader.readAsText(file);
+        }
+
+
+        // --- Event Listeners ---
+        if (addStoryBtn) addStoryBtn.addEventListener('click', () => openStoryModal());
+        const cancelStoryBtn = document.getElementById('cancel-story-btn');
+        if (cancelStoryBtn) cancelStoryBtn.addEventListener('click', () => closeModal(storyModal));
+        const saveStoryBtn = document.getElementById('save-story-btn');
+        if (saveStoryBtn) saveStoryBtn.addEventListener('click', saveStory);
+        if (exportBtn) exportBtn.addEventListener('click', exportData);
+        if (importInput) importInput.addEventListener('change', importData);
+
+         // Listener Delegado para Ações dentro do Conteúdo Principal
+         if(contentPlaceholder) contentPlaceholder.addEventListener('click', (e) => {
+            const target = e.target;
+            console.log("Clicked inside content:", target); // Log de clique
+
+            // Ações de História
+            const storyEntry = target.closest('.story-entry:not(.creature-entry)'); // Garante que não é criatura
+            if (storyEntry) {
+                 console.log("Story action detected");
+                 const storyId = storyEntry.dataset.id;
+                 if (target.classList.contains('edit-story-btn')) {
+                    const story = historiaData.stories.find(s => s.id === storyId);
+                    if (story) openStoryModal(story);
+                 } else if (target.classList.contains('delete-story-btn')) {
+                    deleteStory(storyId);
+                 }
+                 e.stopPropagation(); return;
+            }
+
+            // Ações de Criatura
+            const creatureEntry = target.closest('.creature-entry');
+            if (creatureEntry) {
+                 console.log("Creature action detected");
+                 const creatureId = creatureEntry.dataset.id;
+                 if (target.classList.contains('edit-creature-btn')) {
+                    const creature = historiaData.creatures.find(c => c.id === creatureId);
+                    if (creature) openCreatureModal(creature);
+                 } else if (target.classList.contains('delete-creature-btn')) {
+                    deleteCreature(creatureId);
+                 } else if (target.classList.contains('add-image-btn')) {
+                     console.log("Add image button clicked for creature:", creatureId);
+                     triggerImageUpload(creatureId); // Chama a função correta
+                 }
+                 // Não propaga para accordion se clicou nos botões internos ou na galeria
+                 if (!target.closest('.content-accordion-header') && !target.closest('.gallery-item img')) {
+                      e.stopPropagation();
+                 }
+                 return;
+            }
+         });
+
+
+        // Listeners Modais Criatura
+        const cancelCreatureBtn = document.getElementById('cancel-creature-btn');
+        if (cancelCreatureBtn) cancelCreatureBtn.addEventListener('click', () => closeModal(creatureModal));
+        const saveCreatureBtn = document.getElementById('save-creature-btn');
+        if (saveCreatureBtn) saveCreatureBtn.addEventListener('click', saveCreature);
+
+
+        // --- Inicialização ---
+        function init() {
+            console.log("Initializing application...");
+            try {
+                 if (!sidebarMenu || !contentPlaceholder || !storyModal || !creatureModal || !imageViewerModal) {
+                     throw new Error("Elementos essenciais do DOM não encontrados na inicialização.");
+                 }
+
+                loadTheme();
+                loadData();
+                renderSidebar();
+
+                let initialSectionId = window.location.hash ? window.location.hash.substring(1) : 'home';
+                if (!sectionsMap.has(initialSectionId)) {
+                     console.warn(`Initial section ID "${initialSectionId}" not found, defaulting to home.`);
+                     initialSectionId = 'home';
+                }
+                // Garante que displayContent seja chamado ANTES de tentar ativar o link
+                displayContent(initialSectionId);
+
+                sidebarMenu.querySelectorAll('a').forEach(l => l.classList.remove('active'));
+                const activeLink = sidebarMenu.querySelector(`a[data-section-id="${initialSectionId}"]`);
+                if (activeLink) {
+                    activeLink.classList.add('active');
+                    const parentLi = activeLink.closest('ul.sub-menu')?.parentElement;
+                    if (parentLi) {
+                        parentLi.classList.add('open');
+                    }
+                    console.log("Initial navigation complete.");
+                } else {
+                     console.warn("Could not find active link for initial section:", initialSectionId);
+                     const homeLink = sidebarMenu.querySelector('a[data-section-id="home"]');
+                     if(homeLink) homeLink.classList.add('active');
+                }
+            } catch (error) {
+                 console.error("Error during initialization:", error);
+                 if(contentPlaceholder) contentPlaceholder.innerHTML = `<p class="placeholder-text">Erro crítico durante a inicialização: ${error.message}. Verifique o console.</p>`;
+            }
+        }
+
+         // Garante que o DOM esteja pronto antes de rodar o init
+         if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', init);
+         } else {
+            init(); // Roda imediatamente se já carregado
+         }
+
+    </script>
+
+</body>
+</html>
+
