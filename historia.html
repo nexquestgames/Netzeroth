@@ -45,17 +45,20 @@
             padding: 0.6rem 0.75rem; border-radius: 0.5rem; color: var(--historia-muted-light);
             text-decoration: none; font-weight: 500; font-size: 0.95rem; transition: background-color 0.2s, color 0.2s;
         }
+        /* Icone do menu */
+        .sidebar-nav > ul > li > a .menu-icon { margin-right: 0.75rem; font-size: 1.1rem; }
         /* Submenu */
         .sidebar-nav ul ul.sub-menu { padding-left: 0.5rem; max-height: 0; overflow: hidden; transition: max-height 0.3s ease-out; }
         .sidebar-nav li.open > ul.sub-menu { max-height: 500px; }
         /* Link de Subseção */
         .sidebar-nav ul ul li a {
-             padding: 0.4rem 0.75rem 0.4rem 1.75rem; font-size: 0.875rem; color: var(--historia-muted-light); display: block;
+             padding: 0.4rem 0.75rem 0.4rem 2.5rem; /* Mais recuo por causa do icone pai */
+             font-size: 0.875rem; color: var(--historia-muted-light); display: block;
              border-radius: 0.375rem; position: relative;
         }
         /* Indicador visual para subitem */
         .sidebar-nav ul ul li a::before {
-             content: ''; position: absolute; left: 1rem; top: 50%; transform: translateY(-50%);
+             content: ''; position: absolute; left: 1.75rem; top: 50%; transform: translateY(-50%);
              width: 4px; height: 4px; border-radius: 50%; background-color: var(--historia-border-light);
         }
         html.dark .sidebar-nav ul ul li a::before { background-color: var(--historia-border-dark); }
@@ -110,7 +113,7 @@
         .action-btn { font-size: 0.75rem; padding: 0.25rem 0.5rem; border-radius: 0.375rem; opacity: 0.7; cursor: pointer; } /* Garante cursor */
         .action-btn:hover { opacity: 1; }
 
-        /* Accordion Conteúdo (Histórias e Criaturas) */
+        /* Accordion Conteúdo (Histórias, Criaturas e Censo) */
         .content-accordion-item { border: 1px solid var(--historia-border-light); border-radius: 0.5rem; margin-bottom: 1rem; background-color: var(--historia-accordion-bg-light); overflow: hidden; }
         html.dark .content-accordion-item { border-color: var(--historia-border-dark); background-color: var(--historia-accordion-bg-dark); }
         .content-accordion-header { display: flex; justify-content: space-between; align-items: center; padding: 0.8rem 1.2rem; cursor: pointer; background-color: color-mix(in srgb, var(--historia-border-light) 5%, transparent); transition: background-color 0.2s; }
@@ -127,7 +130,20 @@
         .content-accordion-content h4 { margin-top: 1rem; font-size: 1.1rem; border-bottom: none; } /* Título das seções dentro */
         /* Estilos específicos para Creature Accordion Content */
         .creature-entry .content-accordion-content .content { margin-top: 0.5rem; margin-bottom: 1rem; }
-        .creature-entry .content-accordion-content pre { margin-top: 0.5rem; margin-bottom: 1rem; font-size: 0.9em; /* Ajusta tamanho da fonte pre */ }
+        .creature-entry .content-accordion-content .creature-attributes-display { /* Estilo para exibir atributos */
+            display: flex; flex-wrap: wrap; column-gap: 0.75rem; row-gap: 0.25rem; text-align: center;
+            background-color: color-mix(in srgb, var(--historia-border-light) 3%, transparent);
+            border: 1px dashed var(--historia-border-light); padding: 0.75rem; border-radius: 0.5rem; margin-bottom: 1rem; font-size: 0.8rem;
+        }
+        html.dark .creature-entry .content-accordion-content .creature-attributes-display {
+             background-color: color-mix(in srgb, var(--historia-border-dark) 10%, transparent); border-color: var(--historia-border-dark);
+        }
+        .creature-entry .content-accordion-content .creature-attributes-display span { display: inline-block; min-width: 50px; }
+        /* Estilo para listas de nomes no Censo */
+        .name-list ul { list-style: none; padding-left: 0; margin-top: 0.5rem; column-count: 2; column-gap: 1rem; }
+        @media (min-width: 640px) { .name-list ul { column-count: 3; } } /* Mais colunas em telas maiores */
+        .name-list li { margin-bottom: 0.25rem; font-size: 0.9rem; }
+
 
         /* Seção Home/Principal */
         .section-home-description {
@@ -166,7 +182,7 @@
         .modal-content select, .modal-content input[type="text"], .modal-content input[type="number"], .modal-content textarea { width: 100%; padding: 0.5rem 0.75rem; border-radius: 0.375rem; border: 1px solid var(--historia-border-light); background-color: var(--historia-bg-light); color: var(--historia-text-light); margin-bottom: 1rem; font-size: 1rem; }
         html.dark .modal-content select, html.dark .modal-content input[type="text"], html.dark .modal-content input[type="number"], html.dark .modal-content textarea { border-color: var(--historia-border-dark); background-color: var(--historia-bg-dark); color: var(--historia-text-dark); }
         .modal-content textarea { min-height: 150px; resize: vertical; }
-        #story-content { min-height: 200px; }
+        #story-content, #name-list-names { min-height: 200px; } /* Altura maior para nomes e histórias */
         .modal-actions { display: flex; justify-content: flex-end; gap: 0.75rem; margin-top: 1.5rem; }
         .modal-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1rem; } /* Grid para modal criatura */
         /* Novo grid para atributos da criatura */
@@ -193,7 +209,9 @@
             font-size: 0.75rem;
             font-weight: 600;
             margin-bottom: 0.25rem;
+            color: var(--historia-muted-light); /* Cor do label */
         }
+         html.dark .creature-attributes-grid label { color: var(--historia-muted-dark); }
         .creature-attributes-grid input {
             text-align: center;
             font-weight: 700;
@@ -241,6 +259,7 @@
              .prose h2 { font-size: 1.5rem;}
              .modal-grid { grid-template-columns: 1fr; } /* Modal criatura mobile */
              .creature-attributes-grid { grid-template-columns: repeat(2, 1fr); } /* 2 colunas em mobile */
+             .name-list ul { column-count: 1; } /* 1 coluna Censo mobile */
         }
     </style>
 </head>
@@ -308,20 +327,19 @@
         </div>
     </div>
 
-    <!-- Modal Adicionar/Editar Criatura (MODIFICADO) -->
+    <!-- Modal Adicionar/Editar Criatura (Integrado) -->
     <div id="creature-modal" class="modal">
         <div class="modal-content">
              <h2 id="creature-modal-title">Adicionar Nova Criatura</h2>
              <input type="hidden" id="creature-edit-id">
              <div><label for="creature-name">Nome</label><input type="text" id="creature-name" required></div>
              <div class="modal-grid"> <!-- Grid para HP, EP, Ameaça -->
-                 <div><label for="creature-hp">Pontos de Vida - PV</label><input type="number" id="creature-hp" min="0"></div>
-                 <div><label for="creature-ep"> Pontos Espirituais - PE</label><input type="number" id="creature-ep" min="0"></div>
+                 <div><label for="creature-hp">HP (Opcional)</label><input type="number" id="creature-hp" min="0"></div>
+                 <div><label for="creature-ep">EP (Opcional)</label><input type="number" id="creature-ep" min="0"></div>
                  <div>
-                     <label for="creature-threat">Grau de Ameaça</label>
+                     <label for="creature-threat">Grau de Ameaça (Opcional)</label>
                      <select id="creature-threat">
                          <option value="">Nenhum</option>
-                         <option value="Baixo">Amigável</option>
                          <option value="Baixo">Baixo</option>
                          <option value="Médio">Médio</option>
                          <option value="Alto">Alto</option>
@@ -333,7 +351,7 @@
              </div>
 
              <!-- Nova Seção de Atributos -->
-             <label>Atributos</label>
+             <label>Atributos (como na Ficha)</label>
              <div class="creature-attributes-grid">
                  <div><label for="creature-for">FOR</label><input type="number" id="creature-for" min="1"></div>
                  <div><label for="creature-agi">AGI</label><input type="number" id="creature-agi" min="1"></div>
@@ -358,6 +376,20 @@
         </div>
     </div>
 
+     <!-- NOVO: Modal Adicionar/Editar Lista de Nomes -->
+     <div id="name-list-modal" class="modal">
+         <div class="modal-content">
+              <h2 id="name-list-modal-title">Adicionar Nova Lista de Nomes</h2>
+              <input type="hidden" id="name-list-edit-id">
+              <div><label for="name-list-title">Título / Classificação (Ex: Nomes Humanos de Haravoth)</label><input type="text" id="name-list-title" required></div>
+              <div><label for="name-list-names">Nomes (um por linha)</label><textarea id="name-list-names" required></textarea></div>
+              <div class="modal-actions">
+                  <button id="cancel-name-list-btn" type="button" class="sidebar-btn">Cancelar</button>
+                  <button id="save-name-list-btn" type="button" class="sidebar-btn primary">Salvar Lista</button>
+              </div>
+         </div>
+     </div>
+
     <!-- Modal Visualizador de Imagem (Integrado) -->
     <div id="image-viewer-modal" class="modal">
          <button id="close-viewer-btn" title="Fechar">&times;</button>
@@ -380,6 +412,7 @@
         const storyModal = document.getElementById('story-modal');
         const creatureModal = document.getElementById('creature-modal'); // Adicionado
         const imageViewerModal = document.getElementById('image-viewer-modal'); // Adicionado
+        const nameListModal = document.getElementById('name-list-modal'); // Adicionado
         // Botões Ações Principais
         const addStoryBtn = document.getElementById('add-story-btn');
         const exportBtn = document.getElementById('export-json-btn');
@@ -436,14 +469,14 @@
         if(themeToggleButton) themeToggleButton.addEventListener('click', toggleTheme);
 
         // --- Data Structure ---
-        // (Igual ao código que você forneceu, mas com 'creatures' adicionado)
-        const defaultHistoriaData = { stories: [], sections: [], creatures: [] };
+        // (Adicionado 'nameLists' e 'creatures')
+        const defaultHistoriaData = { stories: [], sections: [], creatures: [], nameLists: [] };
         let historiaData = JSON.parse(JSON.stringify(defaultHistoriaData));
+        // (Adicionado 'icon' para os emojis)
         const staticSectionsDefinition = [
-             // Ordem ajustada ligeiramente
-             { id: 'home', title: '🏠Home', level: 0, order: 0 },
-             { id: 'bem_vindo', title: '🌳Bem vindo à Netzeroth', level: 0, order: 1, isLore: true },
-             { id: 'origem', title: '⏳Histórias de Origem', level: 0, order: 2 },
+             { id: 'home', title: 'Home', level: 0, order: 0, icon: '🏠' },
+             { id: 'bem_vindo', title: 'Bem vindo à Netzeroth', level: 0, order: 1, isLore: true, icon: '🌳' },
+             { id: 'origem', title: 'Histórias de Origem', level: 0, order: 2, icon: '⌛' },
                  { id: 'origem_geral', title: 'Visão Geral', level: 1, parentId: 'origem', order: 2.1 },
                  { id: 'origem_humanos', title: 'Humanos', level: 1, parentId: 'origem', order: 2.2 },
                  { id: 'origem_alvorecidos', title: 'Alvorecidos', level: 1, parentId: 'origem', order: 2.3 },
@@ -451,7 +484,7 @@
                  { id: 'origem_auralinos', title: 'Auralinos', level: 1, parentId: 'origem', order: 2.5 },
                  { id: 'origem_ferinos', title: 'Ferinos', level: 1, parentId: 'origem', order: 2.6 },
                  { id: 'origem_vigias', title: 'Vigias', level: 1, parentId: 'origem', order: 2.7 },
-             { id: 'regioes', title: '🗺️Histórias das Regiões', level: 0, order: 3 },
+             { id: 'regioes', title: 'Histórias das Regiões', level: 0, order: 3, icon: '🗺️' },
                  { id: 'regioes_geral', title: 'Visão Geral', level: 1, parentId: 'regioes', order: 3.1 },
                  { id: 'regioes_ganeved', title: 'Gan Eved', level: 1, parentId: 'regioes', order: 3.2 },
                  { id: 'regioes_ashkar', title: 'Ashkar', level: 1, parentId: 'regioes', order: 3.3 },
@@ -461,17 +494,17 @@
                  { id: 'regioes_metsudoth', title: 'Metsudoth', level: 1, parentId: 'regioes', order: 3.7 },
                  { id: 'regioes_haravoth', title: 'Haravoth', level: 1, parentId: 'regioes', order: 3.8 },
                  { id: 'regioes_neharim', title: 'Neharim', level: 1, parentId: 'regioes', order: 3.9 },
-             { id: 'confins', title: '🌏Histórias dos Confins', level: 0, order: 4 },
-             { id: 'herois', title: '⚔️Histórias dos Heróis', level: 0, order: 5 },
-             { id: 'cultura', title: '📜Cultura e Lendas', level: 0, order: 6 },
+             { id: 'confins', title: 'Histórias dos Confins', level: 0, order: 4, icon: '🌍' },
+             { id: 'herois', title: 'Histórias dos Heróis', level: 0, order: 5, icon: '⚔️' },
+             { id: 'cultura', title: 'Cultura e Lendas', level: 0, order: 6, icon: '📜' },
                  { id: 'cultura_lendas', title: 'Lendas', level: 1, parentId: 'cultura', order: 6.1 },
                  { id: 'cultura_historias', title: 'Histórias', level: 1, parentId: 'cultura', order: 6.2 },
                  { id: 'cultura_cantigas', title: 'Cantigas', level: 1, parentId: 'cultura', order: 6.3 },
                  { id: 'cultura_proverbios', title: 'Provérbios e Ditos', level: 1, parentId: 'cultura', order: 6.4 }, // Ajuste nome
                  { id: 'cultura_brincadeiras', title: 'Brincadeiras', level: 1, parentId: 'cultura', order: 6.5 },
                  { id: 'cultura_anedotas', title: 'Anedotas', level: 1, parentId: 'cultura', order: 6.6 },
-             { id: 'censo', title: 'Censo de Netzeroth', level: 0, order: 7 },
-             { id: 'mitologia', title: 'Mitologia e Criaturas', level: 0, order: 8 },
+             { id: 'censo', title: 'Censo de Netzeroth', level: 0, order: 7, icon: '✒️' }, // Sem subseções estáticas
+             { id: 'mitologia', title: 'Mitologia e Criaturas', level: 0, order: 8, icon: '🐲' },
         ];
         const sectionsMap = new Map();
 
@@ -487,16 +520,21 @@
             confins: "O que existe além das fronteiras conhecidas? Sussurros falam de terras envoltas em névoa eterna, mares onde canções ancestrais ecoam e céus guardados por sentinelas aladas. Aventure-se no desconhecido.",
             herois: "Muitos trilharam o caminho do Portador do Selo, enfrentando a escuridão com coragem indômita e fé inabalável. Conheça as sagas daqueles cujos nomes se tornaram lendas sussurradas ao pé do fogo.",
             cultura: "Um povo se define por suas canções sob o luar, seus ditos sábios passados por gerações, suas crenças profundas e até suas brincadeiras infantis. Mergulhe no coração cultural de Netzeroth.",
-            censo: "Nomes carregam poder, história e destino. Consulte aqui um registro dos nomes comuns e notáveis encontrados pelas diversas regiões e povos, um eco das almas que habitam estas terras.",
+            censo: "Nomes carregam poder, história e destino. Consulte aqui um registro dos nomes comuns e notáveis encontrados pelas diversas regiões e povos, ou adicione suas próprias listas para enriquecer o censo.",
             mitologia: "Criaturas ancestrais nascidas da própria criação, entidades poderosas que caminham entre o véu e a reality, e mitos fundadores sussurrados apenas pelos mais sábios. Desvende os mistérios das forças que moldaram e ainda influenciam o destino de Netzeroth.",
             default: "Explore esta seção para descobrir mais sobre [SECTION_TITLE]." // Fallback
         };
 
 
         // --- Save/Load Data ---
-        // (Igual ao código que você forneceu, mas com 'creatures' adicionado)
+        // (Adicionado 'nameLists' e 'creatures')
         function saveData() {
              try {
+                 // Garante que todos os arrays existam antes de salvar
+                 if (!historiaData.stories) historiaData.stories = [];
+                 if (!historiaData.sections) historiaData.sections = [];
+                 if (!historiaData.creatures) historiaData.creatures = [];
+                 if (!historiaData.nameLists) historiaData.nameLists = [];
                  localStorage.setItem('netzerothHistoriaData_v2', JSON.stringify(historiaData));
                  console.log("Data saved.");
              } catch (e) {
@@ -547,9 +585,10 @@
             historiaData.sections.forEach(s => sectionsMap.set(s.id, s));
              console.log("Sections map populated:", sectionsMap);
 
-            // Carrega histórias e criaturas
+            // Carrega histórias, criaturas e listas de nomes
             historiaData.stories = loaded.stories || [];
-            // Assegura que criaturas tenham a estrutura esperada (incluindo gallery array e attributes object)
+            historiaData.nameLists = loaded.nameLists || []; // Carrega nameLists
+            // Assegura que criaturas tenham a estrutura esperada
             historiaData.creatures = (loaded.creatures || []).map(c => ({
                  id: c.id || ('creature_' + Date.now().toString(36)), // Garante ID
                  name: c.name || 'Criatura Sem Nome',
@@ -561,7 +600,6 @@
                  description: c.description || '',
                  origin: c.origin || '',
                  storiesText: c.storiesText || '',
-                 attributesText: c.attributesText || '', // Mantém o campo antigo para compatibilidade, mas novo é 'attributes'
                  powersText: c.powersText || '',
                  gallery: Array.isArray(c.gallery) ? c.gallery : [] // Garante array
             }));
@@ -571,7 +609,7 @@
 
 
         // --- Rendering Sidebar with Accordion ---
-        // (Igual ao código que você forneceu)
+        // (Modificado para incluir EMOJIS)
         function renderSidebar() {
             console.log("Rendering sidebar...");
             if (!sidebarMenu) { console.error("Sidebar menu element not found!"); return; }
@@ -582,12 +620,14 @@
                 const link = document.createElement('a');
                 link.href = `#${section.id}`;
                 link.dataset.sectionId = section.id;
+                
+                // Adiciona ícone se for nível 0
+                const iconHTML = (section.icon && section.level === 0) ? `<span class="menu-icon">${section.icon}</span>` : '';
 
-                // Encontra filhos APENAS dentro das seções JÁ carregadas/definidas
                 const children = historiaData.sections.filter(s => s.parentId === section.id);
 
                 if (!isSubmenu && children.length > 0) {
-                    link.innerHTML = `${section.title} <span class="expand-indicator">▶</span>`;
+                    link.innerHTML = `${iconHTML} <span class="flex-1">${section.title}</span> <span class="expand-indicator">▶</span>`;
                     li.appendChild(link);
 
                     const subMenu = document.createElement('ul');
@@ -597,7 +637,7 @@
                     });
                     li.appendChild(subMenu);
                 } else {
-                    link.textContent = section.title; // Sem indicador se não tem filhos ou é subitem
+                    link.innerHTML = `${iconHTML} <span class="flex-1">${section.title}</span>`; // Sem indicador
                     li.appendChild(link);
                 }
                 return li;
@@ -621,6 +661,7 @@
                  sidebarMenu.innerHTML = '<li>Erro ao carregar menu.</li>';
             }
         }
+
 
         // --- Navigation & Content Display ---
         // (Igual ao código que você forneceu)
@@ -674,7 +715,7 @@
              }
         }
 
-        // --- displayContent com Textos Introdutórios e Lógica de Botão ---
+        // --- displayContent com Textos Introdutórios e Lógica de Botão CORRIGIDA ---
         function displayContent(sectionId) {
             console.log("Displaying content for section:", sectionId);
             if (!contentPlaceholder) { console.error("Content placeholder element not found!"); return; }
@@ -697,7 +738,7 @@
                     document.title = 'Biblioteca de Netzeroth';
                 } else if (sectionId === 'bem_vindo') {
                     contentPlaceholder.innerHTML = `
-                        <h1>🌳Bem vindo à Netzeroth</h1>
+                        <h1>Bem vindo à Netzeroth</h1>
                         <p class="italic text-[var(--historia-muted-light)] dark:text-[var(--historia-muted-dark)] text-sm mb-4">(Esta seção contém a lore principal e não pode ser editada aqui.)</p>
                         <h2>Prólogo</h2>
                         <p>No princípio, quando as estrelas ainda cantavam e os rios conheciam seus nomes, Elyon, o Grande Rei, moldou a terra de Netzeroth com sua palavra. As montanhas ergueram-se como muralhas, as florestas floresceram com aromas jamais sentidos, e os mares dançavam ao som do vento. Ele habitava no Palácio de Luz, no alto do Monte do Alvorecer, e seu reino se estendia sem sombra ou temor. Sua corte era formada por nobres e mensageiros de poder imenso, cada um incumbido de preservar a ordem e a beleza do mundo.</p>
@@ -709,6 +750,9 @@
                 } else if (sectionId === 'mitologia') {
                     renderMitologiaSection(contentPlaceholder); // Chama a função específica
                     document.title = `Mitologia e Criaturas - Biblioteca Netzeroth`;
+                } else if (sectionId === 'censo') { // *** NOVO CASO PARA CENSO ***
+                     renderCensoSection(contentPlaceholder);
+                     document.title = `Censo de Netzeroth - Biblioteca`;
                 } else if (section) {
                     renderMainSectionPage(section, contentPlaceholder);
                     document.title = `${section.title} - Biblioteca Netzeroth`;
@@ -778,6 +822,7 @@
                  parentElement.innerHTML = '<p class="placeholder-text">Erro ao renderizar seção.</p>'; // Fallback seguro
             }
         }
+
 
         // (renderSubsectionAccordion e renderStoryEntry iguais ao código que você forneceu)
         function renderSubsectionAccordion(section, parentElement, level) {
@@ -861,7 +906,7 @@
              try {
                 parentElement.innerHTML = `
                     <div class="flex justify-between items-center mb-6 flex-wrap gap-4"> <!-- Flex-wrap para mobile -->
-                        <h1>🐲 Mitologia e Criaturas Lendárias</h1>
+                        <h1>Mitologia e Criaturas Lendárias</h1>
                         <button id="add-creature-btn" class="sidebar-btn primary !w-auto flex-shrink-0"> + Adicionar Criatura</button>
                     </div>
                     <p class="section-home-description">${introTexts.mitologia || introTexts.default.replace('[SECTION_TITLE]', 'Mitologia e Criaturas')}</p>
@@ -916,7 +961,7 @@
                 // Atributos (se existirem)
                 let attrStats = '';
                 if (creature.attributes && Object.keys(creature.attributes).length > 0) {
-                     attrStats += '<div class="flex flex-wrap gap-x-3 gap-y-1 text-xs mb-4 p-2 bg-[color-mix(in_srgb,var(--historia-border-light)_3%,transparent)] dark:bg-[color-mix(in_srgb,var(--historia-border-dark)_10%,transparent)] rounded">';
+                     attrStats += '<div class="creature-attributes-display">'; // Usando a classe CSS
                      const attrKeys = ['FOR', 'AGI', 'VIG', 'AST', 'SAB', 'CAR', 'FÉ']; // Ordem definida
                      attrKeys.forEach(key => {
                           if (creature.attributes[key] !== null && creature.attributes[key] !== undefined) {
@@ -944,7 +989,7 @@
                         ${creature.origin ? `<h4>Origem</h4><p>${creature.origin.replace(/\n/g, '<br>')}</p>` : ''}
                         ${creature.storiesText ? `<h4>Histórias</h4><div class="content">${creature.storiesText.replace(/\n/g, '<br>')}</div>` : ''}
                         ${creature.powersText ? `<h4>Poderes / Habilidades</h4><div class="content">${creature.powersText.replace(/\n/g, '<br>')}</div>` : ''}
-                        
+
                         <!-- Galeria -->
                         <div class="mt-6">
                             <div class="flex justify-between items-center mb-2">
@@ -953,7 +998,7 @@
                             </div>
                             <div class="gallery-container"></div>
                         </div>
-                        
+
                         <!-- Ações -->
                         <div class="actions mt-6">
                             <button class="sidebar-btn action-btn edit-creature-btn">Editar</button>
@@ -974,12 +1019,83 @@
              }
         }
 
+        // *** NOVA Renderização da Seção Censo ***
+        function renderCensoSection(parentElement) {
+             console.log("Rendering Censo section");
+             try {
+                parentElement.innerHTML = `
+                    <div class="flex justify-between items-center mb-6 flex-wrap gap-4">
+                        <h1>Censo de Netzeroth</h1>
+                        <button id="add-name-list-btn" class="sidebar-btn primary !w-auto flex-shrink-0"> + Nova Lista de Nomes</button>
+                    </div>
+                    <p class="section-home-description">${introTexts.censo || introTexts.default.replace('[SECTION_TITLE]', 'Censo de Netzeroth')}</p>
+                    <div id="name-lists-container"></div>
+                `;
+
+                const nameListsContainer = document.getElementById('name-lists-container');
+                if (!nameListsContainer) throw new Error("Name lists container not found");
+
+                const nameLists = Array.isArray(historiaData.nameLists) ? historiaData.nameLists : [];
+
+                if (nameLists.length === 0) {
+                    nameListsContainer.innerHTML = `<p class="placeholder-text">(Nenhuma lista de nomes adicionada ainda.)</p>`;
+                } else {
+                    nameLists.sort((a, b) => (a.title || '').localeCompare(b.title || '')).forEach(list => {
+                        renderNameListAccordion(list, nameListsContainer);
+                    });
+                }
+                const addBtn = document.getElementById('add-name-list-btn');
+                if (addBtn) addBtn.addEventListener('click', () => openNameListModal());
+                else console.error("Add name list button not found after rendering Censo section.");
+
+            } catch (error) {
+                 console.error("Error rendering Censo section:", error);
+                 parentElement.innerHTML = '<p class="placeholder-text">Erro ao renderizar seção do Censo.</p>';
+            }
+        }
+
+        // *** NOVA Renderização do Accordion de Lista de Nomes ***
+        function renderNameListAccordion(list, parentElement) {
+             console.log("Rendering name list accordion:", list.id);
+             try {
+                const accordionItem = document.createElement('div');
+                accordionItem.className = 'content-accordion-item name-list-entry'; // Classe específica
+                accordionItem.dataset.id = list.id;
+                accordionItem.id = `name-list-${list.id}`;
+
+                // Processa o array de nomes (já deve ser array aqui)
+                const namesArray = Array.isArray(list.names) ? list.names.filter(name => name) : [];
+
+                accordionItem.innerHTML = `
+                    <div class="content-accordion-header" data-accordion-toggle>
+                        <h3 class="!m-0 !border-none !p-0 !text-lg sm:!text-xl">${list.title || 'Lista Sem Título'}</h3>
+                        <span class="content-accordion-toggle"></span>
+                    </div>
+                    <div class="content-accordion-content name-list"> <!-- Classe para estilizar a lista -->
+                         ${namesArray.length > 0 ?
+                              `<ul>${namesArray.map(name => `<li>${name}</li>`).join('')}</ul>` :
+                              '<p class="placeholder-text text-xs">(Nenhum nome nesta lista)</p>'
+                         }
+                         <!-- Ações -->
+                         <div class="actions mt-6">
+                             <button class="sidebar-btn action-btn edit-name-list-btn">Editar</button>
+                             <button class="sidebar-btn action-btn !bg-red-600 !text-white !border-transparent delete-name-list-btn">Excluir</button>
+                         </div>
+                    </div>
+                `;
+                parentElement.appendChild(accordionItem);
+             } catch (error) {
+                  console.error(`Error rendering name list accordion ${list.id}:`, error);
+             }
+        }
+
+
 
         // --- Accordion Logic (Content) ---
         function handleAccordionToggle(event) {
              const header = event.target.closest('[data-accordion-toggle]');
              if (header) {
-                 const item = header.closest('.content-accordion-item'); // Alterado para classe genérica
+                 const item = header.closest('.content-accordion-item'); // Classe genérica
                  if (item) {
                      item.classList.toggle('open');
                      console.log("Toggled content accordion:", item.id || 'N/A');
@@ -1036,9 +1152,9 @@
              }
 
              function addOptions(parentId, indentLevel) {
-                 // Exclui 'home', 'bem_vindo' e 'mitologia' das opções de destino de histórias
+                 // Exclui 'home', 'bem_vindo', 'mitologia' e 'censo' das opções de destino de histórias
                 const children = historiaData.sections
-                    .filter(s => (s.parentId || null) === parentId && s.id !== 'home' && s.id !== 'bem_vindo' && s.id !== 'mitologia')
+                    .filter(s => (s.parentId || null) === parentId && s.id !== 'home' && s.id !== 'bem_vindo' && s.id !== 'mitologia' && s.id !== 'censo')
                     .sort((a, b) => a.order - b.order);
 
                 children.forEach(section => {
@@ -1073,7 +1189,7 @@
 
             // Popula selects
             populateSectionSelect(storySectionSelect, true, story ? story.sectionId : null);
-            // Popula pais (exclui home, bem_vindo, mitologia e subseções para evitar aninhamento excessivo no modal simples)
+            // Popula pais (exclui home, bem_vindo, mitologia, censo e subseções)
              populateSectionSelect(newSectionParentSelect, false, null);
 
 
@@ -1095,7 +1211,7 @@
                 // Tenta pré-selecionar a seção atual, se válida
                 const currentSectionId = window.location.hash ? window.location.hash.substring(1) : 'home';
                  const currentSection = sectionsMap.get(currentSectionId);
-                 if (currentSection && !currentSection.isLore && currentSectionId !== 'home' && currentSectionId !== 'mitologia') {
+                 if (currentSection && !currentSection.isLore && currentSectionId !== 'home' && currentSectionId !== 'mitologia' && currentSectionId !== 'censo') {
                      storySectionSelect.value = currentSectionId;
                  } else {
                      storySectionSelect.value = ''; // Default sem seleção
@@ -1117,10 +1233,112 @@
             openModal(storyModal);
         }
 
-        function saveStory() { /* ... (igual ao código que você forneceu) ... */ }
-        function deleteStory(id) { /* ... (igual ao código que você forneceu) ... */ }
+        function saveStory() {
+             console.log("saveStory called"); // Log para verificar clique
+             const id = document.getElementById('story-edit-id').value;
+             const title = document.getElementById('story-title').value.trim();
+             const content = document.getElementById('story-content').value.trim();
+             const sectionSelectValue = document.getElementById('story-section').value;
+             let targetSectionId = sectionSelectValue;
 
-        // --- Creature Modal & Actions (Integrado) ---
+             if (!title || !content) { return alert('Título e conteúdo são obrigatórios.'); }
+
+             // Lida com a criação de nova seção
+             if (sectionSelectValue === '_new_top_level' || sectionSelectValue === '_new_sub_section') {
+                 const newSectionTitle = document.getElementById('new-section-title').value.trim();
+                 if (!newSectionTitle) { return alert('Título da nova seção é obrigatório.'); }
+
+                 const parentId = sectionSelectValue === '_new_sub_section' ? document.getElementById('new-section-parent').value || null : null;
+
+                  // Verifica se o pai selecionado existe e não é uma seção de lore fixa
+                  const parentSection = sectionsMap.get(parentId);
+                  if (parentId && (!parentSection || parentSection.isLore)) {
+                      return alert('Não é possível criar subseção dentro de "Bem vindo à Netzeroth" ou seção inválida.');
+                  }
+
+                 const parentLevel = parentSection ? parentSection.level : -1; // Nível do pai (-1 para raiz)
+                 const parentOrder = parentSection ? parentSection.order : 0;
+
+                 // Encontra irmãos para calcular a ordem
+                 const siblings = historiaData.sections.filter(s => (s.parentId || null) === parentId);
+                 const maxOrderAmongSiblings = siblings.length > 0 ? Math.max(...siblings.map(s => s.order)) : parentOrder;
+
+                 // Lógica de ordem aprimorada
+                 let newOrder;
+                 if (parentId) { // Subseção
+                      const integerPartOfParentOrder = Math.floor(parentOrder);
+                      const maxDecimal = siblings.reduce((max, s) => Math.max(max, s.order % 1), 0);
+                      newOrder = integerPartOfParentOrder + Math.max(maxDecimal, siblings.length * 0.1) + 0.1; // Adiciona .1 ou mais
+                 } else { // Seção Principal (Top Level)
+                      const maxTopLevelOrder = historiaData.sections.reduce((max, s) => (s.level === 0 ? Math.max(max, Math.floor(s.order)) : max), 0);
+                      newOrder = maxTopLevelOrder + 1;
+                 }
+
+
+                 const newSection = {
+                     id: 'section_' + Date.now().toString(36) + Math.random().toString(36).substring(2, 5),
+                     title: newSectionTitle,
+                     parentId: parentId,
+                     level: parentLevel + 1, // Nível abaixo do pai
+                     order: newOrder,
+                     isLore: false
+                 };
+                 historiaData.sections.push(newSection);
+                 historiaData.sections.sort((a, b) => a.order - b.order); // Reordena array
+                 sectionsMap.set(newSection.id, newSection);
+                 targetSectionId = newSection.id;
+                 renderSidebar();
+                 console.log("Nova seção criada:", newSection);
+             }
+
+              if (!targetSectionId || targetSectionId.startsWith('_new_') || !sectionsMap.has(targetSectionId) || sectionsMap.get(targetSectionId).isLore) {
+                 return alert("Selecione uma seção de destino válida (não pode ser 'Bem vindo à Netzeroth', 'Mitologia' ou 'Censo').");
+             }
+
+             // Salva a história
+             if (id) { // Editando
+                 const index = historiaData.stories.findIndex(s => s.id === id);
+                 if (index > -1) {
+                     historiaData.stories[index] = { ...historiaData.stories[index], title, content, sectionId: targetSectionId };
+                      console.log("História editada:", historiaData.stories[index]);
+                 }
+             } else { // Adicionando
+                 const newStory = {
+                     id: 'story_' + Date.now().toString(36) + Math.random().toString(36).substring(2, 5),
+                     title, content, sectionId: targetSectionId
+                 };
+                 historiaData.stories.push(newStory);
+                  console.log("História adicionada:", newStory);
+             }
+             saveData();
+
+             // Navega para a seção de destino e atualiza
+              navigateToSection(targetSectionId);
+              // Marca link ativo na sidebar e expande se necessário
+              sidebarMenu.querySelectorAll('a').forEach(l => l.classList.remove('active'));
+              const newActiveLink = sidebarMenu.querySelector(`a[data-section-id="${targetSectionId}"]`);
+              if (newActiveLink) {
+                   newActiveLink.classList.add('active');
+                   const parentLi = newActiveLink.closest('ul.sub-menu')?.parentElement;
+                   if (parentLi && !parentLi.classList.contains('open')) {
+                      parentLi.classList.add('open');
+                   }
+              }
+
+             closeModal(storyModal);
+         }
+
+        function deleteStory(id) {
+            if (confirm("Tem certeza que deseja excluir esta história?")) {
+                historiaData.stories = historiaData.stories.filter(s => s.id !== id);
+                saveData();
+                const currentSectionId = window.location.hash ? window.location.hash.substring(1) : 'home';
+                displayContent(currentSectionId); // Re-renderiza a seção atual
+                 console.log("História excluída:", id);
+            }
+        }
+
+        // --- Creature Modal & Actions (Integrado com novos atributos) ---
         function openCreatureModal(creature = null) {
              console.log("Opening creature modal for:", creature ? creature.id : 'new creature');
              if (!creatureModal) return console.error("Creature modal not found");
@@ -1137,7 +1355,11 @@
              document.getElementById('creature-stories').value = '';
              // Reset atributos
              const attrKeys = ['for', 'agi', 'vig', 'ast', 'sab', 'car', 'fe'];
-             attrKeys.forEach(key => { document.getElementById(`creature-${key}`).value = ''; });
+             attrKeys.forEach(key => {
+                 const input = document.getElementById(`creature-${key}`);
+                 if (input) input.value = ''; // Verifica se o input existe antes de resetar
+                 else console.warn(`Attribute input not found: creature-${key}`);
+             });
              document.getElementById('creature-powers').value = '';
 
             if (creature) { // Editando
@@ -1150,10 +1372,11 @@
                 document.getElementById('creature-description').value = creature.description || '';
                 document.getElementById('creature-origin').value = creature.origin || '';
                 document.getElementById('creature-stories').value = creature.storiesText || '';
-                // Popula atributos
+                // Popula atributos (com verificação)
                 if (creature.attributes) {
                      attrKeys.forEach(key => {
-                         document.getElementById(`creature-${key}`).value = creature.attributes[key.toUpperCase()] || '';
+                          const input = document.getElementById(`creature-${key}`);
+                          if(input) input.value = creature.attributes[key.toUpperCase()] || '';
                      });
                 }
                 document.getElementById('creature-powers').value = creature.powersText || '';
@@ -1171,9 +1394,10 @@
             const attributes = {};
             const attrKeys = ['FOR', 'AGI', 'VIG', 'AST', 'SAB', 'CAR', 'FÉ'];
             attrKeys.forEach(key => {
-                const val = parseInt(document.getElementById(`creature-${key.toLowerCase()}`).value);
+                const input = document.getElementById(`creature-${key.toLowerCase()}`);
+                const val = parseInt(input ? input.value : ''); // Pega valor do input se existir
                 if (!isNaN(val) && val > 0) {
-                    attributes[key] = val;
+                    attributes[key.toUpperCase()] = val; // Salva com chave MAIÚSCULA
                 }
             });
 
@@ -1236,6 +1460,90 @@
                  console.log("Criatura excluída:", id);
             }
         }
+
+         // *** NOVAS Funções para Lista de Nomes ***
+         function openNameListModal(list = null) {
+            console.log("Opening name list modal for:", list ? list.id : 'new list');
+            if (!nameListModal) return console.error("Name list modal not found");
+
+            const titleEl = document.getElementById('name-list-modal-title');
+            const editIdInput = document.getElementById('name-list-edit-id');
+            const listTitleInput = document.getElementById('name-list-title');
+            const listNamesInput = document.getElementById('name-list-names');
+
+            if (!titleEl || !editIdInput || !listTitleInput || !listNamesInput) {
+                return console.error("One or more elements inside name list modal are missing!");
+            }
+
+            if (list) { // Editando
+                titleEl.textContent = 'Editar Lista de Nomes';
+                editIdInput.value = list.id;
+                listTitleInput.value = list.title || '';
+                // Junta o array de nomes de volta em string com quebra de linha
+                listNamesInput.value = Array.isArray(list.names) ? list.names.join('\n') : '';
+            } else { // Adicionando
+                titleEl.textContent = 'Adicionar Nova Lista de Nomes';
+                editIdInput.value = '';
+                listTitleInput.value = '';
+                listNamesInput.value = '';
+            }
+            openModal(nameListModal);
+        }
+
+        function saveNameList() {
+            const id = document.getElementById('name-list-edit-id').value;
+            const title = document.getElementById('name-list-title').value.trim();
+            const namesString = document.getElementById('name-list-names').value.trim();
+
+            if (!title || !namesString) return alert('Título/Classificação e Nomes são obrigatórios.');
+
+            // Converte a string de nomes (um por linha) em um array limpo
+            const namesArray = namesString.split('\n').map(name => name.trim()).filter(name => name);
+
+            const listData = {
+                id: id || ('namelist_' + Date.now().toString(36) + Math.random().toString(36).substring(2, 5)),
+                title: title,
+                names: namesArray // Salva como array
+            };
+
+            // Garante que nameLists é um array
+            if (!Array.isArray(historiaData.nameLists)) historiaData.nameLists = [];
+
+            if (id) { // Editando
+                const index = historiaData.nameLists.findIndex(l => l.id === id);
+                if (index > -1) {
+                    historiaData.nameLists[index] = listData;
+                    console.log("Name list edited:", listData);
+                } else {
+                    console.error("Name list not found for editing:", id);
+                    return;
+                }
+            } else { // Adicionando
+                historiaData.nameLists.push(listData);
+                console.log("Name list added:", listData);
+            }
+
+            saveData();
+            // Re-renderiza APENAS a seção do censo se estiver nela
+            if (window.location.hash === '#censo') {
+                displayContent('censo');
+            }
+            closeModal(nameListModal);
+        }
+
+        function deleteNameList(id) {
+            if (confirm("Tem certeza que deseja excluir esta lista de nomes?")) {
+                 if (!Array.isArray(historiaData.nameLists)) historiaData.nameLists = [];
+                 historiaData.nameLists = historiaData.nameLists.filter(l => l.id !== id);
+                 saveData();
+                 // Re-renderiza a seção do censo se estiver nela
+                 if (window.location.hash === '#censo') {
+                     displayContent('censo');
+                 }
+                 console.log("Name list deleted:", id);
+            }
+        }
+
 
         // --- Gallery Functions (Integrado) ---
          function renderGallery(creature, galleryContainer) {
@@ -1418,12 +1726,13 @@
          if(imageViewerModal) imageViewerModal.addEventListener('click', (e) => { if (e.target === imageViewerModal) closeModal(imageViewerModal); });
          if(viewerImg) viewerImg.addEventListener('click', (e) => { e.stopPropagation(); viewerImg.classList.toggle('zoomed'); });
 
-        // --- Import/Export (Integrado) ---
+        // --- Import/Export (Integrado com nameLists) ---
         function exportData() {
             const dataToExport = {
                 stories: historiaData.stories,
                 sections: historiaData.sections.filter(s => !staticSectionsDefinition.find(staticSec => staticSec.id === s.id)),
-                creatures: historiaData.creatures // Inclui criaturas
+                creatures: historiaData.creatures, // Inclui criaturas
+                nameLists: historiaData.nameLists // Inclui listas de nomes
             };
             const dataStr = JSON.stringify(dataToExport, null, 2);
             const blob = new Blob([dataStr], { type: "application/json" });
@@ -1446,18 +1755,20 @@
                  try {
                      const imported = JSON.parse(e.target.result);
                       // Verifica se tem pelo menos uma das estruturas esperadas
-                     if (imported && (Array.isArray(imported.stories) || Array.isArray(imported.sections) || Array.isArray(imported.creatures))) {
-                         if (confirm("Isso adicionará histórias, seções e criaturas do arquivo aos dados existentes (não substituirá). Deseja continuar?")) {
+                     if (imported && (Array.isArray(imported.stories) || Array.isArray(imported.sections) || Array.isArray(imported.creatures) || Array.isArray(imported.nameLists))) {
+                         if (confirm("Isso adicionará histórias, seções, criaturas e listas de nomes do arquivo aos dados existentes (não substituirá). Deseja continuar?")) {
                              loadData(); // Recarrega dados atuais
 
                              const loadedStories = imported.stories || [];
                              const loadedSections = imported.sections || [];
-                             const loadedCreatures = imported.creatures || []; // Carrega criaturas
+                             const loadedCreatures = imported.creatures || [];
+                             const loadedNameLists = imported.nameLists || []; // Carrega listas de nomes
                              let sectionsAdded = 0;
                              let storiesAdded = 0;
-                             let creaturesAdded = 0; // Contador para criaturas
+                             let creaturesAdded = 0;
+                             let nameListsAdded = 0; // Contador
 
-                             // Adiciona seções dinâmicas importadas (valida e evita duplicatas)
+                             // Adiciona seções dinâmicas (igual antes)
                              loadedSections.forEach(section => {
                                  if (!staticSectionsDefinition.find(s => s.id === section.id) && !sectionsMap.has(section.id)) {
                                       const newSection = {
@@ -1478,7 +1789,7 @@
                               // Reordena após adicionar todas as seções
                               historiaData.sections.sort((a, b) => a.order - b.order);
 
-                             // Adiciona histórias importadas (evita duplicatas)
+                             // Adiciona histórias (igual antes)
                              loadedStories.forEach(story => {
                                  if (!historiaData.stories.find(s => s.id === story.id)) {
                                      // Verifica se a seção de destino existe (estática ou dinâmica)
@@ -1493,7 +1804,7 @@
                                  }
                              });
 
-                             // Adiciona criaturas importadas (evita duplicatas)
+                             // Adiciona criaturas (igual antes)
                              loadedCreatures.forEach(creature => {
                                  if (!historiaData.creatures.find(c => c.id === creature.id)) {
                                      // Validação mínima da estrutura da criatura
@@ -1507,7 +1818,6 @@
                                          description: creature.description || '',
                                          origin: creature.origin || '',
                                          storiesText: creature.storiesText || '',
-                                         attributesText: creature.attributesText || '', // Mantém compatibilidade
                                          powersText: creature.powersText || '',
                                          gallery: Array.isArray(creature.gallery) ? creature.gallery : [] // Garante que galeria seja array
                                      };
@@ -1518,19 +1828,35 @@
                                  }
                              });
 
+                             // *** NOVO: Adiciona listas de nomes importadas (evita duplicatas) ***
+                             loadedNameLists.forEach(list => {
+                                 if (!historiaData.nameLists.find(l => l.id === list.id)) {
+                                     // Validação mínima
+                                     const newList = {
+                                         id: list.id || ('namelist_' + Date.now().toString(36)),
+                                         title: list.title || 'Lista Importada',
+                                         names: Array.isArray(list.names) ? list.names : [] // Garante array
+                                     };
+                                     historiaData.nameLists.push(newList);
+                                     nameListsAdded++;
+                                 } else {
+                                     console.warn(`Lista de nomes com ID ${list.id} já existe, pulando importação.`);
+                                 }
+                             });
 
-                             if (sectionsAdded > 0 || storiesAdded > 0 || creaturesAdded > 0) { // Verifica criaturas também
+
+                             if (sectionsAdded > 0 || storiesAdded > 0 || creaturesAdded > 0 || nameListsAdded > 0) { // Verifica nameLists
                                  saveData();
                                  renderSidebar(); // Atualiza sidebar com novas seções, se houver
                                  const currentSectionId = window.location.hash ? window.location.hash.substring(1) : 'home';
                                  displayContent(currentSectionId); // Re-renderiza conteúdo atual
-                                 alert(`${storiesAdded} histórias, ${sectionsAdded} seções e ${creaturesAdded} criaturas importadas com sucesso!`);
+                                 alert(`${storiesAdded} histórias, ${sectionsAdded} seções, ${creaturesAdded} criaturas e ${nameListsAdded} listas de nomes importadas com sucesso!`);
                              } else {
                                  alert("Nenhuma nova história, seção ou criatura encontrada para importar.");
                              }
                          }
                      } else {
-                         alert("Arquivo JSON inválido ou não contém 'stories', 'sections' ou 'creatures'.");
+                         alert("Arquivo JSON inválido ou não contém 'stories', 'sections', 'creatures' ou 'nameLists'.");
                      }
                  } catch (err) {
                      console.error("Erro ao importar:", err);
@@ -1544,6 +1870,7 @@
 
 
         // --- Event Listeners ---
+        // (Listeners principais iguais ao código que você forneceu)
         if (addStoryBtn) addStoryBtn.addEventListener('click', () => openStoryModal());
         const cancelStoryBtn = document.getElementById('cancel-story-btn');
         if (cancelStoryBtn) cancelStoryBtn.addEventListener('click', () => closeModal(storyModal));
@@ -1591,6 +1918,24 @@
                  }
                  return;
             }
+
+             // *** NOVAS Ações de Lista de Nomes (Censo) ***
+             const nameListEntry = target.closest('.name-list-entry');
+             if (nameListEntry) {
+                  console.log("Name list action detected");
+                  const listId = nameListEntry.dataset.id;
+                  if (target.classList.contains('edit-name-list-btn')) {
+                      const list = historiaData.nameLists.find(l => l.id === listId);
+                      if (list) openNameListModal(list);
+                  } else if (target.classList.contains('delete-name-list-btn')) {
+                      deleteNameList(listId);
+                  }
+                  // Não propaga para accordion se clicou nos botões
+                  if (!target.closest('.content-accordion-header')) {
+                       e.stopPropagation();
+                  }
+                  return;
+             }
          });
 
 
@@ -1600,12 +1945,19 @@
         const saveCreatureBtn = document.getElementById('save-creature-btn');
         if (saveCreatureBtn) saveCreatureBtn.addEventListener('click', saveCreature);
 
+         // *** NOVOS Listeners Modais Lista de Nomes ***
+         const cancelNameListBtn = document.getElementById('cancel-name-list-btn');
+         if (cancelNameListBtn) cancelNameListBtn.addEventListener('click', () => closeModal(nameListModal));
+         const saveNameListBtn = document.getElementById('save-name-list-btn');
+         if (saveNameListBtn) saveNameListBtn.addEventListener('click', saveNameList);
+
 
         // --- Inicialização ---
+        // (Igual ao código que você forneceu)
         function init() {
             console.log("Initializing application...");
             try {
-                 if (!sidebarMenu || !contentPlaceholder || !storyModal || !creatureModal || !imageViewerModal) {
+                 if (!sidebarMenu || !contentPlaceholder || !storyModal || !creatureModal || !imageViewerModal || !nameListModal) { // Adicionado nameListModal
                      throw new Error("Elementos essenciais do DOM não encontrados na inicialização.");
                  }
 
@@ -1652,4 +2004,3 @@
 
 </body>
 </html>
-
